@@ -6,8 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class ScmLinkApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(ScmLinkApplication.class, args);
-	}
-
+    public static void main(String[] args) {
+        SpringApplication.run(ScmLinkApplication.class, args);
+    }
 }
