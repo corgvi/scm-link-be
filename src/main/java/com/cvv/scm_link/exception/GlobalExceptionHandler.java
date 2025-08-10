@@ -27,6 +27,7 @@ public class GlobalExceptionHandler {
         APIResponse apiResponse = new APIResponse();
         apiResponse.setMessage(ErrorCode.UNCATEGORIZED.getMessage());
         apiResponse.setCode(ErrorCode.UNCATEGORIZED.getCode());
+        log.error(ErrorCode.UNCATEGORIZED.getMessage(), e);
         return ResponseEntity.internalServerError().body(apiResponse);
     }
 
@@ -45,6 +46,7 @@ public class GlobalExceptionHandler {
         APIResponse apiResponse = new APIResponse();
         apiResponse.setMessage(errorCode.getMessage());
         apiResponse.setCode(errorCode.getCode());
+        log.error(errorCode.getMessage(), e);
         return ResponseEntity.status(errorCode.getHttpStatusCode()).body(apiResponse);
     }
 
@@ -52,6 +54,7 @@ public class GlobalExceptionHandler {
     ResponseEntity<APIResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         String enumKey = e.getFieldError().getDefaultMessage();
         ErrorCode errorCode = ErrorCode.UNCATEGORIZED;
+        log.error(errorCode.getMessage(), e);
         Map<String, Object> attributes = null;
 
         try {

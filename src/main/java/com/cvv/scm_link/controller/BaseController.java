@@ -2,7 +2,6 @@ package com.cvv.scm_link.controller;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.web.bind.annotation.*;
 
@@ -22,10 +21,8 @@ public abstract class BaseController<C, U, R, ID extends Serializable> {
     }
 
     @GetMapping("/{id}")
-    public APIResponse<Optional<R>> findById(@RequestParam ID id) {
-        return APIResponse.<Optional<R>>builder()
-                .result(baseService.findById(id))
-                .build();
+    public APIResponse<R> findById(@RequestParam ID id) {
+        return APIResponse.<R>builder().result(baseService.findById(id)).build();
     }
 
     @PostMapping

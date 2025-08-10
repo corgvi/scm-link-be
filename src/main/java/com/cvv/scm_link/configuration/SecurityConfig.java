@@ -20,7 +20,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
-    private static final String[] PUBLIC_ENDPOINTS = {"/users", "/auth/**"};
+    private static final String[] PUBLIC_POST_ENDPOINTS = {"/users", "/auth/**"};
+
+    private static final String[] PUBLIC_GET_ENDPOINTS = {"/public/**"};
 
     private final CustomJWTDecoder decoder;
 
@@ -35,8 +37,9 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(rq -> rq.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS)
-                .permitAll()
+        http.authorizeHttpRequests(rq -> rq
+                .requestMatchers(HttpMethod.POST, PUBLIC_POST_ENDPOINTS).permitAll()
+                .requestMatchers(HttpMethod.POST, PUBLIC_GET_ENDPOINTS).permitAll()
                 .anyRequest()
                 .authenticated());
         http.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtConfigurer ->

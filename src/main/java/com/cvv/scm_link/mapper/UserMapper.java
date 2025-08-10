@@ -9,13 +9,12 @@ import com.cvv.scm_link.dto.request.UserUpdateRequest;
 import com.cvv.scm_link.dto.response.UserResponse;
 import com.cvv.scm_link.entity.User;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
-public interface UserMapper {
+public interface UserMapper extends BaseMapper<User, UserCreateRequest, UserUpdateRequest, UserResponse> {
 
-    User toUser(UserCreateRequest request);
-
-    UserResponse toUserResponse(User user);
-
-    @Mapping(target = "roles", ignore = true)
-    void updateUserFromRequest(UserUpdateRequest request, @MappingTarget User user);
+    @Override
+    @Mapping(target = "roles",  ignore = true)
+    void updateFromDTO(UserUpdateRequest dto, @MappingTarget User entity);
 }

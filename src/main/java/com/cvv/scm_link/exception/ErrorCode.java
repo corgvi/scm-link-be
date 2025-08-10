@@ -18,6 +18,7 @@ public enum ErrorCode {
     USERNAME_INVALID(1004, HttpStatus.BAD_REQUEST, "Username must be at least {min} and the most {max} character"),
     PASSWORD_INVALID(1005, HttpStatus.BAD_REQUEST, "Password must be at least {min} and the most {max} character"),
     EMAIL_INVALID(1006, HttpStatus.BAD_REQUEST, "Email is invalid"),
+    PHONE_NUMBER_INVALID(1006, HttpStatus.BAD_REQUEST, "Phone number is invalid"),
     ROLE_IS_REQUIRED(1007, HttpStatus.BAD_REQUEST, "Role is required"),
     PERMISSION_IS_REQUIRED(1008, HttpStatus.BAD_REQUEST, "Permission is required"),
     DOB_INVALID(1009, HttpStatus.BAD_REQUEST, "Your age must be at least {min}"),

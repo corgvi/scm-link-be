@@ -3,9 +3,10 @@ package com.cvv.scm_link.service;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,32 +18,47 @@ import com.cvv.scm_link.entity.Role;
 import com.cvv.scm_link.entity.User;
 import com.cvv.scm_link.exception.AppException;
 import com.cvv.scm_link.exception.ErrorCode;
+import com.cvv.scm_link.mapper.BaseMapper;
 import com.cvv.scm_link.mapper.UserMapper;
+import com.cvv.scm_link.repository.BaseRepository;
 import com.cvv.scm_link.repository.RoleRepository;
 import com.cvv.scm_link.repository.UserRepository;
 
 import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class UserService {
+public class UserService extends BaseServiceImpl<UserCreateRequest, UserUpdateRequest, UserResponse, User, String> {
 
     UserRepository userRepository;
     UserMapper userMapper;
     RoleRepository roleRepository;
     PasswordEncoder passwordEncoder;
 
+    public UserService(
+            BaseRepository<User, String> baseRepository,
+            BaseMapper<User, UserCreateRequest, UserUpdateRequest, UserResponse> baseMapper,
+            UserRepository userRepository,
+            UserMapper userMapper,
+            RoleRepository roleRepository,
+            PasswordEncoder passwordEncoder) {
+        super(baseRepository, baseMapper);
+        this.userRepository = userRepository;
+        this.userMapper = userMapper;
+        this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    @Override
     public UserResponse create(UserCreateRequest request) {
-        if (userRepository.existsById(request.getUsername())) throw new AppException(ErrorCode.USER_EXISTED);
+        if (userRepository.existsByUsername(request.getUsername())) throw new AppException(ErrorCode.USER_EXISTED);
 
-        User user = userMapper.toUser(request);
+        User user = userMapper.toEntity(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-
+        user.setIsActive(true);
         Set<Role> roles = new HashSet<>();
         roleRepository.findById(com.cvv.scm_link.enums.Role.USER.name()).ifPresent(roles::add);
         user.setRoles(roles);
@@ -53,36 +69,43 @@ public class UserService {
             throw new AppException(ErrorCode.USER_EXISTED);
         }
 
-        return userMapper.toUserResponse(user);
+        return userMapper.toDTO(user);
     }
 
-    public UserResponse update(UserUpdateRequest request, String id) {
+    @PreAuthorize("hasRole('ADMIN') or authentication.name == #username")
+    @Override
+    public UserResponse update(UserUpdateRequest request, String username) {
 
-        User user = userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
-        userMapper.updateUserFromRequest(request, user);
+        userMapper.updateFromDTO(request, user);
         user.setRoles(new HashSet<>(roleRepository.findAllById(request.getRoles())));
-        return userMapper.toUserResponse(user);
+        user = userRepository.save(user);
+        return userMapper.toDTO(user);
     }
 
-    public void delete(String id) {
-        if (userRepository.existsById(id)) throw new AppException(ErrorCode.USER_NOT_FOUND);
-        userRepository.deleteById(id);
+    @PreAuthorize("hasRole('ADMIN')")
+    @Override
+    public List<UserResponse> findAll() {
+        return super.findAll();
     }
 
-    public List<UserResponse> getUsers() {
-        return userRepository.findAll().stream().map(userMapper::toUserResponse).collect(Collectors.toList());
+    @PreAuthorize("hasRole('ADMIN')")
+    @Override
+    public UserResponse findById(String s) {
+        return super.findById(s);
     }
 
-    public UserResponse getUser(String id) {
-        return userMapper.toUserResponse(
-                userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND)));
+    @PreAuthorize("hasRole('ADMIN')")
+    @Override
+    public void deleteById(String s) {
+        super.deleteById(s);
     }
 
+    @PostAuthorize("returnObject.username == authentication.name")
     public UserResponse getMyInfo() {
-        var context = SecurityContextHolder.getContext();
-        String name = context.getAuthentication().getName();
+        String name = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUsername(name).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-        return userMapper.toUserResponse(user);
+        return userMapper.toDTO(user);
     }
 }

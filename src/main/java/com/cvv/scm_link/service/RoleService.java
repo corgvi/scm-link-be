@@ -1,7 +1,10 @@
 package com.cvv.scm_link.service;
 
 import java.util.HashSet;
+import java.util.List;
+import java.util.stream.Collectors;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import com.cvv.scm_link.dto.request.RoleRequest;
@@ -23,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@PreAuthorize("hasRole('ADMIN')")
 public class RoleService {
 
     RoleRepository roleRepository;
@@ -47,6 +51,7 @@ public class RoleService {
         roleRequest.getPermissions().stream().forEach(permission -> {
             permissionRepository.findById(permission).ifPresent(permissions::add);
         });
+        role.setName(roleName);
         role.setPermissions(permissions);
         role = roleRepository.save(role);
         return roleMapper.toRoleResponse(role);
@@ -55,5 +60,9 @@ public class RoleService {
     public void delete(String roleName) {
         if (!roleRepository.existsById(roleName)) throw new AppException(ErrorCode.ROLE_NOT_EXISTED);
         roleRepository.deleteById(roleName);
+    }
+
+    public List<RoleResponse> getAll() {
+        return roleRepository.findAll().stream().map(roleMapper::toRoleResponse).collect(Collectors.toList());
     }
 }
