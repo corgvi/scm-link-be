@@ -1,0 +1,28 @@
+package com.cvv.scm_link.dto.response;
+
+import com.cvv.scm_link.dto.BaseDTO;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.SuperBuilder;
+
+@Data
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class SupplierResponse extends BaseDTO {
+    String name;
+    String contactPerson;
+    String email;
+    String address;
+    String phoneNumber;
+    String taxId;
+    String note;
+    String code;
+    Boolean isActive;
+}

@@ -27,7 +27,9 @@ public enum ErrorCode {
     ROLE_EXISTED(1011, HttpStatus.CONFLICT, "Role already exists"),
     ROLE_NOT_EXISTED(1013, HttpStatus.NOT_FOUND, "Role not found"),
     GENERATE_TOKEN_FAILED(1014, HttpStatus.BAD_REQUEST, "Cannot generate token"),
-    ENTITY_NOT_FOUND(1015, HttpStatus.NOT_FOUND, "Entity not found");
+    ENTITY_NOT_FOUND(1015, HttpStatus.NOT_FOUND, "Entity not found"),
+    NAME_INVALID(1016, HttpStatus.BAD_REQUEST, "Name is invalid"),
+    CODE_INVALID(1017, HttpStatus.BAD_REQUEST, "Code must be exactly 3 characters"),;
 
     int code;
     HttpStatusCode httpStatusCode;

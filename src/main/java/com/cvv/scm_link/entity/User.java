@@ -8,10 +8,11 @@ import jakarta.persistence.*;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -27,8 +28,6 @@ public class User extends BaseEntity {
     String address;
     Boolean isActive;
     LocalDate dob;
-    LocalDateTime createdAt;
-    LocalDateTime updatedAt;
 
     @ManyToMany
     Set<Role> roles;

@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import jakarta.transaction.Transactional;
 
 import com.cvv.scm_link.entity.BaseEntity;
 import com.cvv.scm_link.exception.AppException;
@@ -13,6 +12,7 @@ import com.cvv.scm_link.mapper.BaseMapper;
 import com.cvv.scm_link.repository.BaseRepository;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 public abstract class BaseServiceImpl<C, U, R, E extends BaseEntity, ID extends Serializable>
@@ -21,11 +21,13 @@ public abstract class BaseServiceImpl<C, U, R, E extends BaseEntity, ID extends 
     protected final BaseRepository<E, ID> baseRepository;
     protected final BaseMapper<E, C, U, R> baseMapper;
 
+    @Transactional(readOnly = true)
     @Override
     public List<R> findAll() {
         return baseRepository.findAll().stream().map(baseMapper::toDTO).collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public R findById(ID id) {
         E entity = baseRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_FOUND));
@@ -41,6 +43,7 @@ public abstract class BaseServiceImpl<C, U, R, E extends BaseEntity, ID extends 
         return baseMapper.toDTO(entity);
     }
 
+    @Transactional
     @Override
     public R update(U dto, ID id) {
         E entity = baseRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_FOUND));
