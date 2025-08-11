@@ -16,5 +16,6 @@ public interface UserMapper extends BaseMapper<User, UserCreateRequest, UserUpda
 
     @Override
     @Mapping(target = "roles",  ignore = true)
+    @Mapping(target = "isActive", source = "isActive")
     void updateFromDTO(UserUpdateRequest dto, @MappingTarget User entity);
 }

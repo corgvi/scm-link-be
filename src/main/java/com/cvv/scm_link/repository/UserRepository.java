@@ -8,6 +8,8 @@ import com.cvv.scm_link.entity.User;
 
 @Repository
 public interface UserRepository extends BaseRepository<User, String> {
+    Optional<User> findByUsernameAndIsActive(String username, Boolean isActive);
+
     Optional<User> findByUsername(String username);
 
     boolean existsByUsername(String username);

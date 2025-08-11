@@ -21,6 +21,7 @@ public class UserUpdateRequest {
     @Pattern(regexp = "^(\\+84|0)(3|5|7|8|9)[0-9]{8}$", message = "PHONE_NUMBER_INVALID")
     String phoneNumber;
     String address;
+    Boolean isActive;
 
     @DobConstraint(min = 18, message = "DOB_INVALID")
     LocalDate dob;

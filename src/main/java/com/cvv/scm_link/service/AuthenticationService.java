@@ -62,7 +62,7 @@ public class AuthenticationService {
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
 
         User user = userRepository
-                .findByUsername(request.getUsername())
+                .findByUsernameAndIsActive(request.getUsername(), true)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         PasswordEncoder encoder = new BCryptPasswordEncoder(10);
         if (!encoder.matches(request.getPassword(), user.getPassword()))
@@ -151,7 +151,7 @@ public class AuthenticationService {
 
         var username = signedJWT.getJWTClaimsSet().getSubject();
         var user =
-                userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.UNAUTHENTICATED));
+                userRepository.findByUsernameAndIsActive(username, true).orElseThrow(() -> new AppException(ErrorCode.UNAUTHENTICATED));
         var token = generateToken(user);
         return AuthenticationResponse.builder().token(token).authenticated(true).build();
     }
