@@ -37,7 +37,7 @@ public abstract class BaseServiceImpl<C, U, R, E extends BaseEntity, ID extends 
     @Transactional
     @Override
     public R create(C dto) {
-        if (dto == null) throw new IllegalArgumentException("DTO must not be null");
+        if (dto == null) throw new AppException(ErrorCode.DTO_IS_NULL);
         E entity = baseMapper.toEntity(dto);
         entity = baseRepository.save(entity);
         return baseMapper.toDTO(entity);

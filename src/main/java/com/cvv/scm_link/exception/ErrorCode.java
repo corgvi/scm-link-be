@@ -29,7 +29,14 @@ public enum ErrorCode {
     GENERATE_TOKEN_FAILED(1014, HttpStatus.BAD_REQUEST, "Cannot generate token"),
     ENTITY_NOT_FOUND(1015, HttpStatus.NOT_FOUND, "Entity not found"),
     NAME_INVALID(1016, HttpStatus.BAD_REQUEST, "Name is invalid"),
-    CODE_INVALID(1017, HttpStatus.BAD_REQUEST, "Code must be exactly 3 characters"),;
+    CODE_INVALID(1017, HttpStatus.BAD_REQUEST, "Code must be exactly {max} characters"),
+    DTO_IS_NULL(1018, HttpStatus.BAD_REQUEST , "DTO must not be null" ),
+    SUPPLIER_NOT_FOUND(1019, HttpStatus.NOT_FOUND , "Supplier not found" ),
+    CATEGORY_NOT_FOUND(1020, HttpStatus.NOT_FOUND, "Category not found"),
+    PRODUCT_NOT_FOUND(1021, HttpStatus.NOT_FOUND, "Product not found"),
+    SIZE_INVALID(1022, HttpStatus.BAD_REQUEST, "Size must be exactly {max} characters"),
+    COLOR_INVALID(1023, HttpStatus.BAD_REQUEST, "Color is invalid"),
+    CODE_EXISTED(1024, HttpStatus.BAD_REQUEST, "Code already existed");
 
     int code;
     HttpStatusCode httpStatusCode;

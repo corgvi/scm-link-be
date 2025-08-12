@@ -26,6 +26,9 @@ public class Product extends BaseEntity {
     String heightCm;
     String branchName;
     String color;
+    String size;
+    @Column(nullable = false, unique = true, name = "code", columnDefinition = "VARCHAR(255) COLLATE utf8mb4_unicode_ci")
+    String code;
 
     @ManyToOne
     @JoinColumn(name = "category_id")

@@ -25,6 +25,8 @@ public class ProductResponse extends BaseDTO {
     String heightCm;
     String branchName;
     String color;
+    String code;
+    String size;
     CategoryResponse category;
     SupplierResponse supplier;
 }

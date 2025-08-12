@@ -1,9 +1,6 @@
 package com.cvv.scm_link.entity;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
@@ -26,7 +23,9 @@ public class Category extends BaseEntity{
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
     List<Product> products;
 
-    public void setCode(String code) {
+    @PrePersist
+    @PreUpdate
+    public void normalizeCode() {
         this.code = (code == null) ? null : code.toUpperCase();
     }
 }

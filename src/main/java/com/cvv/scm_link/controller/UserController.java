@@ -2,6 +2,7 @@ package com.cvv.scm_link.controller;
 
 import java.util.List;
 
+import com.cvv.scm_link.service.BaseService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,50 +18,20 @@ import lombok.experimental.FieldDefaults;
 
 @RestController
 @RequestMapping("/users")
-@RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class UserController {
+public class UserController extends BaseController<UserCreateRequest, UserUpdateRequest, UserResponse, String>{
 
     UserService userService;
+
+    public UserController(BaseService<UserCreateRequest, UserUpdateRequest, UserResponse, String> baseService, UserService userService) {
+        super(baseService);
+        this.userService = userService;
+    }
 
     @GetMapping("/my-info")
     public APIResponse<UserResponse> getMyInfo() {
         return APIResponse.<UserResponse>builder()
                 .result(userService.getMyInfo())
                 .build();
-    }
-
-    @GetMapping
-    public APIResponse<List<UserResponse>> getUsers() {
-        return APIResponse.<List<UserResponse>>builder()
-                .result(userService.findAll())
-                .build();
-    }
-
-    @GetMapping("/{id}")
-    public APIResponse<UserResponse> getUserById(@PathVariable String id) {
-        return APIResponse.<UserResponse>builder()
-                .result(userService.findById(id))
-                .build();
-    }
-
-    @PostMapping
-    public APIResponse<UserResponse> create(@RequestBody @Valid UserCreateRequest request) {
-        return APIResponse.<UserResponse>builder()
-                .result(userService.create(request))
-                .build();
-    }
-
-    @PutMapping("/{id}")
-    public APIResponse<UserResponse> update(@RequestBody @Valid UserUpdateRequest request, @PathVariable String id) {
-        return APIResponse.<UserResponse>builder()
-                .result(userService.update(request, id))
-                .build();
-    }
-
-    @DeleteMapping("/{id}")
-    public APIResponse<Void> delete(@PathVariable String id) {
-        userService.deleteById(id);
-        return APIResponse.<Void>builder().build();
     }
 }

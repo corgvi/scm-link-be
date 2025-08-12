@@ -3,6 +3,7 @@ package com.cvv.scm_link.controller;
 import java.io.Serializable;
 import java.util.List;
 
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import com.cvv.scm_link.dto.response.APIResponse;
@@ -26,17 +27,18 @@ public abstract class BaseController<C, U, R, ID extends Serializable> {
     }
 
     @PostMapping
-    public APIResponse<R> save(@RequestBody C dto) {
+    public APIResponse<R> save(@RequestBody @Valid C dto) {
         return APIResponse.<R>builder().result(baseService.create(dto)).build();
     }
 
     @PutMapping("/{id}")
-    public APIResponse<R> update(@RequestBody U dto, @PathVariable ID id) {
+    public APIResponse<R> update(@RequestBody @Valid U dto, @PathVariable ID id) {
         return APIResponse.<R>builder().result(baseService.update(dto, id)).build();
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable ID id) {
+    public APIResponse<Void> delete(@PathVariable ID id) {
         baseService.deleteById(id);
+        return APIResponse.<Void>builder().build();
     }
 }

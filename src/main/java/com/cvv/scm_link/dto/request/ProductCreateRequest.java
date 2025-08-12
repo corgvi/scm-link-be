@@ -1,6 +1,7 @@
 package com.cvv.scm_link.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -10,8 +11,6 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ProductCreateRequest {
-    @NotBlank(message = "SKU_INVALID")
-    String sku;
     @NotBlank(message = "NAME_INVALID")
     String name;
     String description;
@@ -22,9 +21,14 @@ public class ProductCreateRequest {
     String heightCm;
     @NotBlank(message = "BRANCH_NAME_INVALID")
     String branchName;
+    @Size(min = 3, max = 3, message = "CODE_INVALID")
+    String code;
+    @Size(min = 1, max = 3, message = "SIZE_INVALID")
+    String size;
+    @NotBlank(message = "COLOR_INVALID")
     String color;
-    @NotBlank(message = "CATEGORY_ID_INVALID")
+    @NotBlank(message = "CATEGORY_CODE_INVALID")
     String categoryCode;
-    @NotBlank(message = "SUPPLIER_ID_INVALID")
+    @NotBlank(message = "SUPPLIER_CODE_INVALID")
     String supplierCode;
 }
