@@ -29,4 +29,7 @@ public class Warehouse extends BaseEntity {
 
     @OneToMany(mappedBy = "warehouse", cascade = CascadeType.ALL)
     List<WarehouseLocation> warehouseLocations;
+
+    @OneToMany(mappedBy = "warehouse", cascade = CascadeType.ALL)
+    List<ReceivingNote> receivingNotes;
 }

@@ -30,13 +30,17 @@ public enum ErrorCode {
     ENTITY_NOT_FOUND(1015, HttpStatus.NOT_FOUND, "Entity not found"),
     NAME_INVALID(1016, HttpStatus.BAD_REQUEST, "Name is invalid"),
     CODE_INVALID(1017, HttpStatus.BAD_REQUEST, "Code must be exactly {max} characters"),
-    DTO_IS_NULL(1018, HttpStatus.BAD_REQUEST , "DTO must not be null" ),
-    SUPPLIER_NOT_FOUND(1019, HttpStatus.NOT_FOUND , "Supplier not found" ),
+    DTO_IS_NULL(1018, HttpStatus.BAD_REQUEST, "DTO must not be null"),
+    SUPPLIER_NOT_FOUND(1019, HttpStatus.NOT_FOUND, "Supplier not found"),
     CATEGORY_NOT_FOUND(1020, HttpStatus.NOT_FOUND, "Category not found"),
     PRODUCT_NOT_FOUND(1021, HttpStatus.NOT_FOUND, "Product not found"),
     SIZE_INVALID(1022, HttpStatus.BAD_REQUEST, "Size must be exactly {max} characters"),
     COLOR_INVALID(1023, HttpStatus.BAD_REQUEST, "Color is invalid"),
-    CODE_EXISTED(1024, HttpStatus.BAD_REQUEST, "Code already existed");
+    CODE_EXISTED(1024, HttpStatus.BAD_REQUEST, "Code already existed"),
+    FIELD_REQUIRED(1024, HttpStatus.BAD_REQUEST, "Field is required"),
+    WAREHOUSE_NOT_FOUND(1025, HttpStatus.NOT_FOUND, "Warehouse not found"),
+    WAREHOUSE_LOCATION_NOT_FOUND(1026, HttpStatus.NOT_FOUND, "Warehouse location not found"),
+    INVENTORY_LEVEL_NOTFOUND(1027, HttpStatus.NOT_FOUND, "Inventory level not found");
 
     int code;
     HttpStatusCode httpStatusCode;

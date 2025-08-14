@@ -1,6 +1,5 @@
 package com.cvv.scm_link.dto.response;
 
-import com.cvv.scm_link.dto.BaseDTO;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,11 +12,10 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ProductResponse extends BaseDTO {
-    String sku;
-    String name;
-    String imageUrl;
-    String code;
-    String categoryCode;
-    String supplierCode;
+public class InventoryTransactionResponse {
+    String transactionType;
+    Integer quantityChange;
+    Integer currentQuantity;
+    String note;
+    InventoryLevelResponse inventoryLevel;
 }

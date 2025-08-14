@@ -16,4 +16,5 @@ public interface ProductRepository extends BaseRepository<Product, String> {
                                     @Param("size") String size,
                                     @Param("color") String color);
 
+    boolean existsByCode(String code);
 }

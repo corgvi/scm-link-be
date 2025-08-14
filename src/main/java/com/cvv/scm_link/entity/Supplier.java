@@ -29,6 +29,9 @@ public class Supplier extends BaseEntity{
     @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL)
     List<Product> products;
 
+    @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL)
+    List<ReceivingNote> receivingNotes;
+
     @PrePersist
     @PreUpdate
     public void normalizeCode() {

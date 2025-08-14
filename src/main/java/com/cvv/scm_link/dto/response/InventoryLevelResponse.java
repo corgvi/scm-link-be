@@ -13,11 +13,11 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ProductResponse extends BaseDTO {
-    String sku;
-    String name;
-    String imageUrl;
-    String code;
-    String categoryCode;
-    String supplierCode;
+public class InventoryLevelResponse extends BaseDTO {
+    int quantityOnHand;
+    int quantityReserved;
+    int quantityAvailable;
+    int minStockLevel;
+    ProductResponse product;
+    WarehouseResponse warehouse;
 }

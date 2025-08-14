@@ -15,10 +15,10 @@ import java.util.List;
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class InventoryLevel extends BaseEntity{
-    Integer quantityOnHand;
-    Integer quantityReserved;
-    Integer quantityAvailable;
-    Integer minStockLevel;
+    int quantityOnHand;
+    int quantityReserved;
+    int quantityAvailable;
+    int minStockLevel;
 
     @ManyToOne
     @JoinColumn(name = "warehouse_id")
@@ -29,5 +29,5 @@ public class InventoryLevel extends BaseEntity{
     Product product;
 
     @OneToMany(mappedBy = "inventoryLevel", cascade = CascadeType.ALL)
-    List<InventoryLocationDetails> inventoryLocationDetails;
+    List<InventoryLocationDetail> inventoryLocationDetails;
 }

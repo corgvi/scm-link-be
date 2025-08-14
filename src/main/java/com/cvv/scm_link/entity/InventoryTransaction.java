@@ -7,8 +7,6 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Setter
 @SuperBuilder
@@ -16,17 +14,13 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class InventoryLocationDetails extends BaseEntity {
-    Integer quantity;
-    String batchNumber;
-    LocalDateTime expiryDate;
-    Long costPrice;
+public class InventoryTransaction extends BaseEntity {
+    String transactionType;
+    Integer quantityChange;
+    Integer currentQuantity;
+    String note;
 
     @ManyToOne
     @JoinColumn(name = "inventoryLevel_id")
     InventoryLevel inventoryLevel;
-
-    @ManyToOne
-    @JoinColumn(name = "warehouseLocation_id")
-    WarehouseLocation warehouseLocation;
 }

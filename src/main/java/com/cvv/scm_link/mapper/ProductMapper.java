@@ -2,16 +2,14 @@ package com.cvv.scm_link.mapper;
 
 import com.cvv.scm_link.dto.request.ProductCreateRequest;
 import com.cvv.scm_link.dto.request.ProductUpdateRequest;
-import com.cvv.scm_link.dto.response.ProductResponse;
+import com.cvv.scm_link.dto.response.ProductDetailsResponse;
 import com.cvv.scm_link.entity.Product;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-import java.util.List;
-
 @Mapper(componentModel = "spring", uses = {CategoryMapper.class, SupplierMapper.class})
-public interface ProductMapper extends BaseMapper<Product, ProductCreateRequest, ProductUpdateRequest, ProductResponse>{
+public interface ProductMapper extends BaseMapper<Product, ProductCreateRequest, ProductUpdateRequest, ProductDetailsResponse>{
     @Override
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)

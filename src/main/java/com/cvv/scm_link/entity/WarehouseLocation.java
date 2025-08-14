@@ -25,5 +25,5 @@ public class WarehouseLocation extends BaseEntity{
     Warehouse warehouse;
 
     @OneToMany(mappedBy = "warehouseLocation", cascade = CascadeType.ALL)
-    List<InventoryLocationDetails> inventoryLocationDetails;
+    List<InventoryLocationDetail> inventoryLocationDetails;
 }

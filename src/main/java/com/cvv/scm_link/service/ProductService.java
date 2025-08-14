@@ -2,7 +2,7 @@ package com.cvv.scm_link.service;
 
 import com.cvv.scm_link.dto.request.ProductCreateRequest;
 import com.cvv.scm_link.dto.request.ProductUpdateRequest;
-import com.cvv.scm_link.dto.response.ProductResponse;
+import com.cvv.scm_link.dto.response.ProductDetailsResponse;
 import com.cvv.scm_link.entity.Category;
 import com.cvv.scm_link.entity.Product;
 import com.cvv.scm_link.entity.Supplier;
@@ -28,14 +28,14 @@ import java.util.StringJoiner;
 @Slf4j
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE,  makeFinal = true)
-public class ProductService extends BaseServiceImpl<ProductCreateRequest, ProductUpdateRequest, ProductResponse, Product, String>{
+public class ProductService extends BaseServiceImpl<ProductCreateRequest, ProductUpdateRequest, ProductDetailsResponse, Product, String>{
 
     CategoryRepository categoryRepository;
     SupplierRepository supplierRepository;
     ProductRepository productRepository;
     ProductMapper productMapper;
 
-    public ProductService(BaseRepository<Product, String> baseRepository, BaseMapper<Product, ProductCreateRequest, ProductUpdateRequest, ProductResponse> baseMapper, CategoryRepository categoryRepository, SupplierRepository supplierRepository, ProductRepository productRepository, ProductMapper productMapper) {
+    public ProductService(BaseRepository<Product, String> baseRepository, BaseMapper<Product, ProductCreateRequest, ProductUpdateRequest, ProductDetailsResponse> baseMapper, CategoryRepository categoryRepository, SupplierRepository supplierRepository, ProductRepository productRepository, ProductMapper productMapper) {
         super(baseRepository, baseMapper);
         this.categoryRepository = categoryRepository;
         this.supplierRepository = supplierRepository;
@@ -44,12 +44,12 @@ public class ProductService extends BaseServiceImpl<ProductCreateRequest, Produc
     }
 
     @Override
-//    @Transactional
-//    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    public ProductResponse create(ProductCreateRequest dto) {
+    @Transactional(rollbackFor = AppException.class)
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    public ProductDetailsResponse create(ProductCreateRequest dto) {
 
         if (dto == null) throw new AppException(ErrorCode.DTO_IS_NULL);
-        if (categoryRepository.existsByCode(dto.getCode())) throw new AppException(ErrorCode.CODE_EXISTED);
+        if (productRepository.existsByCode((dto.getCode()))) throw new AppException(ErrorCode.CODE_EXISTED);
 
         Product entity = baseMapper.toEntity(dto);
         Category category = categoryRepository.findByCode(dto.getCategoryCode()).orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
@@ -80,10 +80,10 @@ public class ProductService extends BaseServiceImpl<ProductCreateRequest, Produc
 
     @Override
     @Transactional(rollbackFor = AppException.class)
-    public ProductResponse update(ProductUpdateRequest dto, String s) {
+    public ProductDetailsResponse update(ProductUpdateRequest dto, String s) {
         Product product = productRepository.findById(s).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
         productMapper.updateFromDTO(dto, product);
-        if (categoryRepository.existsByCode(dto.getCode())) throw new AppException(ErrorCode.CODE_EXISTED);
+        if (productRepository.existsByCode(dto.getCode())) throw new AppException(ErrorCode.CODE_EXISTED);
         product.setCategory(categoryRepository.findByCode(dto.getCategoryCode()).orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND)));
         product.setSupplier(supplierRepository.findByCode(dto.getSupplierCode()).orElseThrow(() -> new AppException(ErrorCode.SUPPLIER_NOT_FOUND)));
         product.setSku(generateSku(dto.getSize(), dto.getCategoryCode(), dto.getCode(), dto.getColor()));
