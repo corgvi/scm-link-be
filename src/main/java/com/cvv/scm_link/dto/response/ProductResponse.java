@@ -13,11 +13,9 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ProductResponse extends BaseDTO {
+public class ProductResponse{
     String sku;
     String name;
     String imageUrl;
     String code;
-    String categoryCode;
-    String supplierCode;
 }

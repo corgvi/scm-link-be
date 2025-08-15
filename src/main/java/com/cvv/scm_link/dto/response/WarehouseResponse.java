@@ -3,9 +3,10 @@ package com.cvv.scm_link.dto.response;
 import com.cvv.scm_link.dto.BaseDTO;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.SuperBuilder;
 
 @Data
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)

@@ -58,8 +58,7 @@ public class ReceivingNoteService extends BaseServiceImpl<ReceivingNoteRequest, 
         receivingNote.setWarehouse(warehouse);
         receivingNote.setSupplier(supplierRepository.findById(dto.getSupplier_id()).orElseThrow(() -> new AppException(ErrorCode.SUPPLIER_NOT_FOUND)));
 
-        int totalItemsReceived = 0;
-
+        if (dto.getProducts().isEmpty()) throw new AppException(ErrorCode.PRODUCT_IS_REQUIRED);
         dto.getProducts().forEach(p -> {
             InventoryLevelRequest request = InventoryLevelRequest.builder()
                     .warehouse_id(warehouse.getId())
@@ -69,13 +68,14 @@ public class ReceivingNoteService extends BaseServiceImpl<ReceivingNoteRequest, 
             InventoryLevelResponse inventoryLevelResponse = inventoryRepository.createOrUpdate(request);
 
             InventoryLocationDetailRequest inventoryLocationDetailRequest = InventoryLocationDetailRequest.builder()
+                    .quantity(p.getQuantity())
                     .batchNumber(p.getBatchNumber())
                     .costPrice(p.getCostPrice())
                     .expiryDate(p.getExpiryDate())
                     .inventoryLevelId(inventoryLevelResponse.getId())
                     .warehouseLocationId(p.getWarehouseLocationId())
                     .build();
-            inventoryLocationDetailService.create(inventoryLocationDetailRequest);
+            inventoryLocationDetailService.createOrUpdate(inventoryLocationDetailRequest, dto.getWarehouse_id(), p.getProductId());
 
             InventoryTransactionRequest inventoryTransaction = InventoryTransactionRequest.builder()
                     .inventoryLevelId(inventoryLevelResponse.getId())

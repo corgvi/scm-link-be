@@ -18,4 +18,10 @@ public class WarehouseService extends BaseServiceImpl<WarehouseRequest, Warehous
     public WarehouseService(BaseRepository<Warehouse, String> baseRepository, BaseMapper<Warehouse, WarehouseRequest, WarehouseRequest, WarehouseResponse> baseMapper) {
         super(baseRepository, baseMapper);
     }
+
+    @Override
+    public WarehouseResponse create(WarehouseRequest dto) {
+        dto.setIsActive(true);
+        return super.create(dto);
+    }
 }

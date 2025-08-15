@@ -1,6 +1,8 @@
 package com.cvv.scm_link.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -14,9 +16,7 @@ import java.util.List;
 public class ReceivingNoteRequest {
     String warehouse_id;
     String supplier_id;
-    @NotBlank(message = "FIELD_REQUIRED")
+    @NotNull(message = "TOTAL_ITEMS_IS_REQUIRED")
     Integer totalItemsExpected;
-    @NotBlank(message = "FIELD_REQUIRED")
     List<ReceivingItemsRequest> products;
-
 }

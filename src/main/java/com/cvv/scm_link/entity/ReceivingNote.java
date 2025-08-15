@@ -1,6 +1,7 @@
 package com.cvv.scm_link.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.*;
@@ -17,15 +18,15 @@ import lombok.experimental.SuperBuilder;
 public class ReceivingNote extends BaseEntity{
     String receivingType;
     String status;
-    Integer totalItemsExpected;
-    Integer totalItemsReceived;
+    int totalItemsExpected;
+    int totalItemsReceived;
     String note;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "warehouse_id")
     Warehouse warehouse;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "supplier_id")
     Supplier supplier;
 }

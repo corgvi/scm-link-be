@@ -30,11 +30,11 @@ public class Product extends BaseEntity {
     @Column(nullable = false, unique = true, name = "code", columnDefinition = "VARCHAR(255) COLLATE utf8mb4_unicode_ci")
     String code;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     Category category;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "supplier_id")
     Supplier supplier;
 

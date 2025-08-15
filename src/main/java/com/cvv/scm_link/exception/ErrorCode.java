@@ -40,7 +40,21 @@ public enum ErrorCode {
     FIELD_REQUIRED(1024, HttpStatus.BAD_REQUEST, "Field is required"),
     WAREHOUSE_NOT_FOUND(1025, HttpStatus.NOT_FOUND, "Warehouse not found"),
     WAREHOUSE_LOCATION_NOT_FOUND(1026, HttpStatus.NOT_FOUND, "Warehouse location not found"),
-    INVENTORY_LEVEL_NOTFOUND(1027, HttpStatus.NOT_FOUND, "Inventory level not found");
+    INVENTORY_LEVEL_NOTFOUND(1027, HttpStatus.NOT_FOUND, "Inventory level not found"),
+    WAREHOUSE_LOCATION_NOT_IN_WAREHOUSE(1028, HttpStatus.NOT_FOUND, "Warehouse location not in Warehouse" ),
+    QUANTITY_IS_REQUIRED(1029, HttpStatus.BAD_REQUEST, "Quantity is required"),
+    BATCH_NUMBER_IS_REQUIRED(1030, HttpStatus.BAD_REQUEST, "Batch number is required"),
+    COST_PRICE_IS_REQUIRED(1031, HttpStatus.BAD_REQUEST, "Cost price is required"),
+    INVENTORY_LEVEL_IS_REQUIRED(1032, HttpStatus.BAD_REQUEST, "Inventory level is required"),
+    WAREHOUSE_IS_REQUIRED(1033, HttpStatus.BAD_REQUEST, "Warehouse is required"),
+    PRODUCT_IS_REQUIRED(1034, HttpStatus.BAD_REQUEST, "Product is required"),
+    TRANSACTION_TYPE_IS_REQUIRED(1035, HttpStatus.BAD_REQUEST, "Transaction type is required"),
+    LOCATION_CODE_IS_REQUIRED(1036, HttpStatus.BAD_REQUEST, "Location is required"),
+    LOCATION_TYPE_IS_REQUIRED(1037, HttpStatus.BAD_REQUEST, "Location type is required"),
+    MAX_CAPACITY_IS_REQUIRED(1038, HttpStatus.BAD_REQUEST, "Max capacity is required"),
+    IS_AVAILABLE_IS_REQUIRED(1039, HttpStatus.BAD_REQUEST, "Is available is required"),
+    LATITUDE_INVALID(1040, HttpStatus.BAD_REQUEST, "Latitude is invalid"),
+    LONGITUDE_INVALID(1041, HttpStatus.BAD_REQUEST, "Longitude is invalid"),;
 
     int code;
     HttpStatusCode httpStatusCode;

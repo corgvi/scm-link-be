@@ -17,10 +17,10 @@ import java.util.List;
 public class WarehouseLocation extends BaseEntity{
     String locationCode;
     String locationType;
-    Integer maxCapacityKg;
-    Boolean isAvailable;
+    int maxCapacityKg;
+    boolean isAvailable;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "warehouse_id")
     Warehouse warehouse;
 

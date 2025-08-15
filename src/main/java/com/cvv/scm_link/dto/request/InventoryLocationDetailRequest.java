@@ -1,9 +1,11 @@
 package com.cvv.scm_link.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -12,15 +14,15 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class InventoryLocationDetailRequest {
-    @NotBlank(message = "FIELD_REQUIRED")
+    @NotNull(message = "QUANTITY_IS_REQUIRED")
     Integer quantity;
-    @NotBlank(message = "FIELD_REQUIRED")
+    @NotBlank(message = "BATCH_NUMBER_IS_REQUIRED")
     String batchNumber;
-    LocalDateTime expiryDate;
-    @NotBlank(message = "FIELD_REQUIRED")
+    LocalDate expiryDate;
+    @NotNull(message = "COST_PRICE_IS_REQUIRED")
     Long costPrice;
-    @NotBlank(message = "FIELD_REQUIRED")
+    @NotBlank(message = "INVENTORY_LEVEL_IS_REQUIRED")
     String inventoryLevelId;
-    @NotBlank(message = "FIELD_REQUIRED")
+    @NotBlank(message = "WAREHOUSE_IS_REQUIRED")
     String warehouseLocationId;
 }

@@ -29,6 +29,6 @@ public class User extends BaseEntity {
     Boolean isActive;
     LocalDate dob;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     Set<Role> roles;
 }

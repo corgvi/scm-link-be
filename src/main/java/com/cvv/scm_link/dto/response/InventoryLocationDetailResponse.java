@@ -1,5 +1,6 @@
 package com.cvv.scm_link.dto.response;
 
+import com.cvv.scm_link.dto.BaseDTO;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -15,11 +16,11 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class InventoryLocationDetailResponse {
+public class InventoryLocationDetailResponse extends BaseDTO {
     Integer quantity;
     String batchNumber;
     LocalDateTime expiryDate;
     Long costPrice;
-    WarehouseResponse warehouse;
+    WarehouseLocationResponse warehouse;
     ProductResponse product;
 }
