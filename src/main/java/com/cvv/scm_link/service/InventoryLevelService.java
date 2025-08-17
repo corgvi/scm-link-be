@@ -51,7 +51,6 @@ public class InventoryLevelService extends BaseServiceImpl<InventoryLevelRequest
                     .product(product)
                     .build();
         } else {
-            // cần xem lại logic
             int quantityOnHand = inventoryLevel.getQuantityOnHand();
             inventoryLevelMapper.updateFromDTO(request, inventoryLevel);
             inventoryLevel.setQuantityOnHand(quantityOnHand + request.getQuantityOnHand());

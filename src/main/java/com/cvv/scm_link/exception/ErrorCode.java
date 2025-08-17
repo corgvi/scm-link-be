@@ -54,7 +54,8 @@ public enum ErrorCode {
     MAX_CAPACITY_IS_REQUIRED(1038, HttpStatus.BAD_REQUEST, "Max capacity is required"),
     IS_AVAILABLE_IS_REQUIRED(1039, HttpStatus.BAD_REQUEST, "Is available is required"),
     LATITUDE_INVALID(1040, HttpStatus.BAD_REQUEST, "Latitude is invalid"),
-    LONGITUDE_INVALID(1041, HttpStatus.BAD_REQUEST, "Longitude is invalid"),;
+    LONGITUDE_INVALID(1041, HttpStatus.BAD_REQUEST, "Longitude is invalid"),
+    RELATE_ID_IS_REQUIRED(1042, HttpStatus.BAD_REQUEST, "Relate id is required"),;
 
     int code;
     HttpStatusCode httpStatusCode;

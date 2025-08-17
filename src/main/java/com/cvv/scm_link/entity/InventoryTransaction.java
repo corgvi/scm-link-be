@@ -20,6 +20,7 @@ public class InventoryTransaction extends BaseEntity {
     int quantityChange;
     int currentQuantity;
     String note;
+    String relateEntityId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "inventoryLevel_id")

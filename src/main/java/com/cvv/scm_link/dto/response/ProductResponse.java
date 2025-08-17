@@ -13,7 +13,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ProductResponse{
+public class ProductResponse extends BaseDTO{
     String sku;
     String name;
     String imageUrl;

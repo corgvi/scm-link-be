@@ -14,10 +14,10 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class InventoryLevelResponse extends BaseDTO {
-    int quantityOnHand;
-    int quantityReserved;
-    int quantityAvailable;
-    int minStockLevel;
+    Integer quantityOnHand;
+    Integer quantityReserved;
+    Integer quantityAvailable;
+    Integer minStockLevel;
     ProductResponse product;
     WarehouseResponse warehouse;
 }
