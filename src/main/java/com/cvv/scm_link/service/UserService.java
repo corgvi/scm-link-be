@@ -76,7 +76,8 @@ public class UserService extends BaseServiceImpl<UserCreateRequest, UserUpdateRe
     @Override
     public UserResponse update(UserUpdateRequest request, String username) {
 
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        User user =
+                userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
         userMapper.updateFromDTO(request, user);
         user.setRoles(new HashSet<>(roleRepository.findAllById(request.getRoles())));

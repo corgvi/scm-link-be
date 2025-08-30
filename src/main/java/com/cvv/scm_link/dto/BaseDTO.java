@@ -1,11 +1,10 @@
 package com.cvv.scm_link.dto;
 
+import java.time.LocalDateTime;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
-
-import java.time.Instant;
-import java.time.LocalDateTime;
 
 @Getter
 @Setter

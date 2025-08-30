@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cvv.scm_link.entity.BaseEntity;
 import com.cvv.scm_link.exception.AppException;
@@ -12,7 +13,6 @@ import com.cvv.scm_link.mapper.BaseMapper;
 import com.cvv.scm_link.repository.BaseRepository;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 public abstract class BaseServiceImpl<C, U, R, E extends BaseEntity, ID extends Serializable>

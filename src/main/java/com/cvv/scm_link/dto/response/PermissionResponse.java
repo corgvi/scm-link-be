@@ -1,7 +1,5 @@
 package com.cvv.scm_link.dto.response;
 
-import com.cvv.scm_link.dto.BaseDTO;
-
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

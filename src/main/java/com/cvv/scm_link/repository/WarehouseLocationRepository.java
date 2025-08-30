@@ -1,9 +1,10 @@
 package com.cvv.scm_link.repository;
 
-import com.cvv.scm_link.entity.WarehouseLocation;
+import java.util.Optional;
+
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
+import com.cvv.scm_link.entity.WarehouseLocation;
 
 @Repository
 public interface WarehouseLocationRepository extends BaseRepository<WarehouseLocation, String> {

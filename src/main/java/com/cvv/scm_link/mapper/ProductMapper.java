@@ -1,24 +1,28 @@
 package com.cvv.scm_link.mapper;
 
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+
 import com.cvv.scm_link.dto.request.ProductCreateRequest;
 import com.cvv.scm_link.dto.request.ProductUpdateRequest;
 import com.cvv.scm_link.dto.response.ProductDetailsResponse;
 import com.cvv.scm_link.dto.response.ProductResponse;
 import com.cvv.scm_link.entity.Product;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
 
-@Mapper(componentModel = "spring", uses = {CategoryMapper.class, SupplierMapper.class})
-public interface ProductMapper extends BaseMapper<Product, ProductCreateRequest, ProductUpdateRequest, ProductDetailsResponse>{
+@Mapper(
+        componentModel = "spring",
+        uses = {CategoryMapper.class, SupplierMapper.class})
+public interface ProductMapper
+        extends BaseMapper<Product, ProductCreateRequest, ProductUpdateRequest, ProductDetailsResponse> {
     @Override
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "createdBy", ignore = true)
     @Mapping(target = "updatedBy", ignore = true)
-    @Mapping(target = "category" , ignore = true)
-    @Mapping(target = "supplier",  ignore = true)
+    @Mapping(target = "category", ignore = true)
+    @Mapping(target = "supplier", ignore = true)
     @Mapping(target = "inventoryLevels", ignore = true)
     void updateFromDTO(ProductUpdateRequest dto, @MappingTarget Product entity);
 
@@ -28,8 +32,8 @@ public interface ProductMapper extends BaseMapper<Product, ProductCreateRequest,
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "createdBy", ignore = true)
     @Mapping(target = "updatedBy", ignore = true)
-    @Mapping(target = "category" , ignore = true)
-    @Mapping(target = "supplier",  ignore = true)
+    @Mapping(target = "category", ignore = true)
+    @Mapping(target = "supplier", ignore = true)
     @Mapping(target = "inventoryLevels", ignore = true)
     Product toEntity(ProductCreateRequest dto);
 

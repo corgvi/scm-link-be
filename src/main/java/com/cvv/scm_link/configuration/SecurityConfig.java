@@ -37,9 +37,10 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(rq -> rq
-                .requestMatchers(HttpMethod.POST, PUBLIC_POST_ENDPOINTS).permitAll()
-                .requestMatchers(HttpMethod.POST, PUBLIC_GET_ENDPOINTS).permitAll()
+        http.authorizeHttpRequests(rq -> rq.requestMatchers(HttpMethod.POST, PUBLIC_POST_ENDPOINTS)
+                .permitAll()
+                .requestMatchers(HttpMethod.POST, PUBLIC_GET_ENDPOINTS)
+                .permitAll()
                 .anyRequest()
                 .authenticated());
         http.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtConfigurer ->

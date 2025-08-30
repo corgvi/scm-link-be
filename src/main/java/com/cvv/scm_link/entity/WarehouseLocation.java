@@ -1,11 +1,12 @@
 package com.cvv.scm_link.entity;
 
+import java.util.List;
+
 import jakarta.persistence.*;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
-
-import java.util.List;
 
 @Getter
 @Setter
@@ -14,7 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class WarehouseLocation extends BaseEntity{
+public class WarehouseLocation extends BaseEntity {
     String locationCode;
     String locationType;
     int maxCapacityKg;

@@ -40,8 +40,8 @@ public enum ErrorCode {
     FIELD_REQUIRED(1024, HttpStatus.BAD_REQUEST, "Field is required"),
     WAREHOUSE_NOT_FOUND(1025, HttpStatus.NOT_FOUND, "Warehouse not found"),
     WAREHOUSE_LOCATION_NOT_FOUND(1026, HttpStatus.NOT_FOUND, "Warehouse location not found"),
-    INVENTORY_LEVEL_NOTFOUND(1027, HttpStatus.NOT_FOUND, "Inventory level not found"),
-    WAREHOUSE_LOCATION_NOT_IN_WAREHOUSE(1028, HttpStatus.NOT_FOUND, "Warehouse location not in Warehouse" ),
+    INVENTORY_LEVEL_NOT_FOUND(1027, HttpStatus.NOT_FOUND, "Inventory level not found"),
+    WAREHOUSE_LOCATION_NOT_IN_WAREHOUSE(1028, HttpStatus.NOT_FOUND, "Warehouse location not in Warehouse"),
     QUANTITY_IS_REQUIRED(1029, HttpStatus.BAD_REQUEST, "Quantity is required"),
     BATCH_NUMBER_IS_REQUIRED(1030, HttpStatus.BAD_REQUEST, "Batch number is required"),
     COST_PRICE_IS_REQUIRED(1031, HttpStatus.BAD_REQUEST, "Cost price is required"),
@@ -55,7 +55,12 @@ public enum ErrorCode {
     IS_AVAILABLE_IS_REQUIRED(1039, HttpStatus.BAD_REQUEST, "Is available is required"),
     LATITUDE_INVALID(1040, HttpStatus.BAD_REQUEST, "Latitude is invalid"),
     LONGITUDE_INVALID(1041, HttpStatus.BAD_REQUEST, "Longitude is invalid"),
-    RELATE_ID_IS_REQUIRED(1042, HttpStatus.BAD_REQUEST, "Relate id is required"),;
+    RELATE_ID_IS_REQUIRED(1042, HttpStatus.BAD_REQUEST, "Relate id is required"),
+    ADDRESS_IS_REQUIRED(1043, HttpStatus.BAD_REQUEST, "Address is required"),
+    PRICE_INVALID(1044, HttpStatus.BAD_REQUEST, "Price is invalid"),
+    ORDER_NOT_FOUND(1045, HttpStatus.NOT_FOUND, "Order not found"),
+    PRODUCT_EXCEEDS_ALLOWABLE(1046, HttpStatus.BAD_REQUEST, "Product exceeds allowable quantity"),
+    ROUTE_NOT_FOUND(1047, HttpStatus.BAD_REQUEST, "No route found from Mapbox API");
 
     int code;
     HttpStatusCode httpStatusCode;

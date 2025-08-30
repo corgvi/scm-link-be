@@ -1,13 +1,14 @@
 package com.cvv.scm_link.entity;
 
+import java.util.List;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
-
-import java.util.List;
 
 @Getter
 @Setter
@@ -20,8 +21,8 @@ public class Warehouse extends BaseEntity {
     String name;
     String address;
     String contactPhone;
-    String latitude;
-    String longitude;
+    double latitude;
+    double longitude;
     boolean isActive;
 
     @OneToMany(mappedBy = "warehouse", cascade = CascadeType.ALL)
@@ -32,4 +33,7 @@ public class Warehouse extends BaseEntity {
 
     @OneToMany(mappedBy = "warehouse", cascade = CascadeType.ALL)
     List<ReceivingNote> receivingNotes;
+
+    @OneToMany(mappedBy = "pickupWarehouse", cascade = CascadeType.ALL)
+    List<Delivery> deliveries;
 }

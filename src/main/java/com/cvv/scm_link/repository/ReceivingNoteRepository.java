@@ -1,8 +1,8 @@
 package com.cvv.scm_link.repository;
 
-import com.cvv.scm_link.entity.ReceivingNote;
 import org.springframework.stereotype.Repository;
 
+import com.cvv.scm_link.entity.ReceivingNote;
+
 @Repository
-public interface ReceivingNoteRepository extends BaseRepository<ReceivingNote, String> {
-}
+public interface ReceivingNoteRepository extends BaseRepository<ReceivingNote, String> {}

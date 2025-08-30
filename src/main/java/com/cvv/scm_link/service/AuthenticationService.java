@@ -150,8 +150,9 @@ public class AuthenticationService {
         invalidatedTokenRepository.save(invalidatedToken);
 
         var username = signedJWT.getJWTClaimsSet().getSubject();
-        var user =
-                userRepository.findByUsernameAndIsActive(username, true).orElseThrow(() -> new AppException(ErrorCode.UNAUTHENTICATED));
+        var user = userRepository
+                .findByUsernameAndIsActive(username, true)
+                .orElseThrow(() -> new AppException(ErrorCode.UNAUTHENTICATED));
         var token = generateToken(user);
         return AuthenticationResponse.builder().token(token).authenticated(true).build();
     }

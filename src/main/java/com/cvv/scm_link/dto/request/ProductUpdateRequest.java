@@ -2,6 +2,7 @@ package com.cvv.scm_link.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -13,22 +14,29 @@ import lombok.experimental.FieldDefaults;
 public class ProductUpdateRequest {
     @NotBlank(message = "NAME_INVALID")
     String name;
+
     String description;
     String imageUrl;
     String weightG;
     String lengthCm;
     String widthCm;
     String heightCm;
+
     @NotBlank(message = "BRANCH_NAME_INVALID")
     String branchName;
+
     @Size(min = 3, max = 3, message = "CODE_INVALID")
     String code;
+
     @Size(min = 1, max = 3, message = "SIZE_INVALID")
     String size;
+
     @NotBlank(message = "COLOR_INVALID")
     String color;
+
     @NotBlank(message = "CATEGORY_CODE_INVALID")
     String categoryCode;
+
     @NotBlank(message = "SUPPLIER_CODE_INVALID")
     String supplierCode;
 }

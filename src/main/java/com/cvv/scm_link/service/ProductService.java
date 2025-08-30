@@ -1,5 +1,14 @@
 package com.cvv.scm_link.service;
 
+import java.util.Objects;
+import java.util.StringJoiner;
+
+import jakarta.persistence.LockModeType;
+
+import org.springframework.data.jpa.repository.Lock;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.cvv.scm_link.dto.request.ProductCreateRequest;
 import com.cvv.scm_link.dto.request.ProductUpdateRequest;
 import com.cvv.scm_link.dto.response.ProductDetailsResponse;
@@ -14,28 +23,29 @@ import com.cvv.scm_link.repository.BaseRepository;
 import com.cvv.scm_link.repository.CategoryRepository;
 import com.cvv.scm_link.repository.ProductRepository;
 import com.cvv.scm_link.repository.SupplierRepository;
-import jakarta.persistence.LockModeType;
+
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.jpa.repository.Lock;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Objects;
-import java.util.StringJoiner;
 
 @Slf4j
 @Service
-@FieldDefaults(level = AccessLevel.PRIVATE,  makeFinal = true)
-public class ProductService extends BaseServiceImpl<ProductCreateRequest, ProductUpdateRequest, ProductDetailsResponse, Product, String>{
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+public class ProductService
+        extends BaseServiceImpl<ProductCreateRequest, ProductUpdateRequest, ProductDetailsResponse, Product, String> {
 
     CategoryRepository categoryRepository;
     SupplierRepository supplierRepository;
     ProductRepository productRepository;
     ProductMapper productMapper;
 
-    public ProductService(BaseRepository<Product, String> baseRepository, BaseMapper<Product, ProductCreateRequest, ProductUpdateRequest, ProductDetailsResponse> baseMapper, CategoryRepository categoryRepository, SupplierRepository supplierRepository, ProductRepository productRepository, ProductMapper productMapper) {
+    public ProductService(
+            BaseRepository<Product, String> baseRepository,
+            BaseMapper<Product, ProductCreateRequest, ProductUpdateRequest, ProductDetailsResponse> baseMapper,
+            CategoryRepository categoryRepository,
+            SupplierRepository supplierRepository,
+            ProductRepository productRepository,
+            ProductMapper productMapper) {
         super(baseRepository, baseMapper);
         this.categoryRepository = categoryRepository;
         this.supplierRepository = supplierRepository;
@@ -52,8 +62,12 @@ public class ProductService extends BaseServiceImpl<ProductCreateRequest, Produc
         if (productRepository.existsByCode((dto.getCode()))) throw new AppException(ErrorCode.CODE_EXISTED);
 
         Product entity = baseMapper.toEntity(dto);
-        Category category = categoryRepository.findByCode(dto.getCategoryCode()).orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
-        Supplier supplier = supplierRepository.findByCode(dto.getSupplierCode()).orElseThrow(() -> new AppException(ErrorCode.SUPPLIER_NOT_FOUND));
+        Category category = categoryRepository
+                .findByCode(dto.getCategoryCode())
+                .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
+        Supplier supplier = supplierRepository
+                .findByCode(dto.getSupplierCode())
+                .orElseThrow(() -> new AppException(ErrorCode.SUPPLIER_NOT_FOUND));
         entity.setCategory(category);
         entity.setSupplier(supplier);
         entity.setSku(generateSku(dto.getSize(), category.getCode(), dto.getCode(), dto.getColor()));
@@ -64,7 +78,9 @@ public class ProductService extends BaseServiceImpl<ProductCreateRequest, Produc
     private String generateSku(String size, String categoryCode, String productCode, String color) {
         StringJoiner sku = new StringJoiner("-");
         int lastIndexSku = 1;
-        Product product = productRepository.findByLastSku(productCode, categoryCode, size, color).orElse(null);
+        Product product = productRepository
+                .findByLastSku(productCode, categoryCode, size, color)
+                .orElse(null);
         if (Objects.isNull(product)) {
             sku.add(productCode).add(categoryCode).add(color).add(size).add(String.format("%03d", lastIndexSku));
         } else {
@@ -81,11 +97,16 @@ public class ProductService extends BaseServiceImpl<ProductCreateRequest, Produc
     @Override
     @Transactional(rollbackFor = AppException.class)
     public ProductDetailsResponse update(ProductUpdateRequest dto, String s) {
-        Product product = productRepository.findById(s).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+        Product product =
+                productRepository.findById(s).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
         productMapper.updateFromDTO(dto, product);
         if (productRepository.existsByCode(dto.getCode())) throw new AppException(ErrorCode.CODE_EXISTED);
-        product.setCategory(categoryRepository.findByCode(dto.getCategoryCode()).orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND)));
-        product.setSupplier(supplierRepository.findByCode(dto.getSupplierCode()).orElseThrow(() -> new AppException(ErrorCode.SUPPLIER_NOT_FOUND)));
+        product.setCategory(categoryRepository
+                .findByCode(dto.getCategoryCode())
+                .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND)));
+        product.setSupplier(supplierRepository
+                .findByCode(dto.getSupplierCode())
+                .orElseThrow(() -> new AppException(ErrorCode.SUPPLIER_NOT_FOUND)));
         product.setSku(generateSku(dto.getSize(), dto.getCategoryCode(), dto.getCode(), dto.getColor()));
         product = productRepository.save(product);
         return productMapper.toDTO(product);

@@ -1,8 +1,7 @@
 package com.cvv.scm_link.dto.response;
 
 import com.cvv.scm_link.dto.BaseDTO;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;

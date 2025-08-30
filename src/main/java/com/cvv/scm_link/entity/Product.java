@@ -1,11 +1,12 @@
 package com.cvv.scm_link.entity;
 
+import java.util.List;
+
 import jakarta.persistence.*;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
-
-import java.util.List;
 
 @Getter
 @Setter
@@ -17,17 +18,23 @@ import java.util.List;
 public class Product extends BaseEntity {
     @Column(nullable = false, unique = true, name = "sku", columnDefinition = "VARCHAR(255) COLLATE utf8mb4_unicode_ci")
     String sku;
+
     String name;
     String description;
     String imageUrl;
-    String weightG;
+    Integer weightG;
     String lengthCm;
     String widthCm;
     String heightCm;
     String branchName;
     String color;
     String size;
-    @Column(nullable = false, unique = true, name = "code", columnDefinition = "VARCHAR(255) COLLATE utf8mb4_unicode_ci")
+
+    @Column(
+            nullable = false,
+            unique = true,
+            name = "code",
+            columnDefinition = "VARCHAR(255) COLLATE utf8mb4_unicode_ci")
     String code;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -40,4 +47,13 @@ public class Product extends BaseEntity {
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     List<InventoryLevel> inventoryLevels;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    List<OrderItems> orderItems;
+
+    @PrePersist
+    @PreUpdate
+    public void normalizeCode() {
+        this.code = (code == null) ? null : code.toUpperCase();
+    }
 }

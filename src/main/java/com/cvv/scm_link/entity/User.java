@@ -1,7 +1,7 @@
 package com.cvv.scm_link.entity;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 import jakarta.persistence.*;
@@ -31,4 +31,13 @@ public class User extends BaseEntity {
 
     @ManyToMany(fetch = FetchType.LAZY)
     Set<Role> roles;
+
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
+    List<Order> orders;
+
+    @OneToMany(mappedBy = "driver", cascade = CascadeType.ALL)
+    List<Vehicle> vehicles;
+
+    @OneToMany(mappedBy = "assignedDriver", cascade = CascadeType.ALL)
+    List<Delivery> deliveries;
 }

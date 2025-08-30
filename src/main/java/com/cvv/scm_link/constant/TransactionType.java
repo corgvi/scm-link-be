@@ -5,5 +5,6 @@ public class TransactionType {
     public static final String SHIPPING = "SHIPPING";
     public static final String ADJUSTMENT = "ADJUSTMENT";
     public static final String RETURN = "RETURN";
+
     private TransactionType() {}
 }
