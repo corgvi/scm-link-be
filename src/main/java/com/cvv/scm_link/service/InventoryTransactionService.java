@@ -73,6 +73,7 @@ public class InventoryTransactionService
         InventoryTransaction inventoryTransaction = inventoryTransactionMapper.toEntity(dto);
         inventoryTransaction.setInventoryLevel(inventoryLevel);
         inventoryTransaction.setRelateEntityId(inventoryLevel.getId());
+        inventoryTransaction.setTransactionType(TransactionType.RECEIVING);
         inventoryTransaction = inventoryTransactionRepository.save(inventoryTransaction);
         inventoryTransactionMapper.toDTO(inventoryTransaction);
     }

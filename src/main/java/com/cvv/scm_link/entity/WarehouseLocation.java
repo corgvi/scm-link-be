@@ -19,7 +19,7 @@ public class WarehouseLocation extends BaseEntity {
     String locationCode;
     String locationType;
     int maxCapacityKg;
-    boolean isAvailable;
+    boolean available;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "warehouse_id")

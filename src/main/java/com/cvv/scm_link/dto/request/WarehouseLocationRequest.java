@@ -22,7 +22,7 @@ public class WarehouseLocationRequest {
     Integer maxCapacityKg;
 
     @NotNull(message = "IS_AVAILABLE_IS_REQUIRED")
-    Boolean isAvailable;
+    Boolean available;
 
     String warehouseId;
 }

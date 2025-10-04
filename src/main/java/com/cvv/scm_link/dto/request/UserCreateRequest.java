@@ -2,9 +2,7 @@ package com.cvv.scm_link.dto.request;
 
 import java.time.LocalDate;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 import com.cvv.scm_link.validator.DobConstraint;
 
@@ -25,6 +23,7 @@ public class UserCreateRequest {
     String password;
 
     @Email(message = "EMAIL_INVALID")
+    @NotBlank(message = "EMAIL_INVALID")
     String email;
 
     String fullName;
@@ -35,5 +34,6 @@ public class UserCreateRequest {
     String address;
 
     @DobConstraint(min = 18, message = "DOB_INVALID")
+    @NotNull(message = "DOB_INVALID")
     LocalDate dob;
 }

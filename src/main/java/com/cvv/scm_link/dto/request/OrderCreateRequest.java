@@ -14,7 +14,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class OrderRequest {
+public class OrderCreateRequest {
     @NotBlank(message = "NAME_INVALID")
     String customerName;
 

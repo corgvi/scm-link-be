@@ -23,5 +23,5 @@ public class SupplierResponse extends BaseDTO {
     String taxId;
     String note;
     String code;
-    Boolean isActive;
+    Boolean active;
 }

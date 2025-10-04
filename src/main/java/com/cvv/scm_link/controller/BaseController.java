@@ -23,7 +23,7 @@ public abstract class BaseController<C, U, R, ID extends Serializable> {
     }
 
     @GetMapping("/{id}")
-    public APIResponse<R> findById(@RequestParam ID id) {
+    public APIResponse<R> findById(@PathVariable("id") ID id) {
         return APIResponse.<R>builder().result(baseService.findById(id)).build();
     }
 

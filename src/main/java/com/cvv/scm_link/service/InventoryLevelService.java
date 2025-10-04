@@ -1,5 +1,6 @@
 package com.cvv.scm_link.service;
 
+import com.cvv.scm_link.dto.response.InventorySummaryDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +21,8 @@ import com.cvv.scm_link.repository.WarehouseRepository;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.List;
 
 @Slf4j
 @Service
@@ -73,5 +76,9 @@ public class InventoryLevelService
         }
         inventoryLevel = inventoryLevelRepository.save(inventoryLevel);
         return inventoryLevelMapper.toDTO(inventoryLevel);
+    }
+
+    public List<InventorySummaryDTO> getInventorySummary() {
+        return inventoryLevelRepository.getInventorySummary();
     }
 }

@@ -60,7 +60,9 @@ public enum ErrorCode {
     PRICE_INVALID(1044, HttpStatus.BAD_REQUEST, "Price is invalid"),
     ORDER_NOT_FOUND(1045, HttpStatus.NOT_FOUND, "Order not found"),
     PRODUCT_EXCEEDS_ALLOWABLE(1046, HttpStatus.BAD_REQUEST, "Product exceeds allowable quantity"),
-    ROUTE_NOT_FOUND(1047, HttpStatus.BAD_REQUEST, "No route found from Mapbox API");
+    ROUTE_NOT_FOUND(1047, HttpStatus.BAD_REQUEST, "No route found from Mapbox API"),
+    WEIGHT_INVALID(1048, HttpStatus.BAD_REQUEST, "Weight is invalid"),
+    INVENTORY_LOCATION_DETAIL_NOT_FOUND(1049, HttpStatus.NOT_FOUND, "Inventory location detail not found"),;
 
     int code;
     HttpStatusCode httpStatusCode;

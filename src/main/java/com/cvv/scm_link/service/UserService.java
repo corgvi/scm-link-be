@@ -72,7 +72,7 @@ public class UserService extends BaseServiceImpl<UserCreateRequest, UserUpdateRe
         return userMapper.toDTO(user);
     }
 
-    @PreAuthorize("hasRole('ADMIN') or authentication.name == #username")
+    @PreAuthorize("(authentication.name == #username) || hasRole('ADMIN')")
     @Override
     public UserResponse update(UserUpdateRequest request, String username) {
 
@@ -80,7 +80,7 @@ public class UserService extends BaseServiceImpl<UserCreateRequest, UserUpdateRe
                 userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
         userMapper.updateFromDTO(request, user);
-        user.setRoles(new HashSet<>(roleRepository.findAllById(request.getRoles())));
+        if (request.getRoles() != null) user.setRoles(new HashSet<>(roleRepository.findAllById(request.getRoles())));
         user = userRepository.save(user);
         return userMapper.toDTO(user);
     }

@@ -15,6 +15,5 @@ public class WarehouseLocationResponse extends BaseDTO {
     String locationCode;
     String locationType;
     Integer maxCapacityKg;
-    Boolean isAvailable;
-    WarehouseResponse warehouse;
+    Boolean available;
 }

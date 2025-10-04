@@ -28,4 +28,6 @@ public class SupplierRequest {
 
     @Size(min = 3, max = 3, message = "CODE_INVALID")
     String code;
+
+    Boolean active;
 }

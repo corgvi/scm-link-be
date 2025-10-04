@@ -17,15 +17,27 @@ import lombok.experimental.SuperBuilder;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Table(name = "customer_order")
 public class Order extends BaseEntity {
+    @Column(nullable = false)
     String customerName;
+
+    @Column(nullable = false)
     String customerPhone;
+
     String customerEmail;
+
+    @Column(nullable = false)
     String shippingAddress;
+
+    @Column(nullable = false)
     double shippingLatitude;
+
+    @Column(nullable = false)
     double shippingLongitude;
     //    SP = CP + (CP * Markup%) + Shipping Fee + Handling Fee + Tax
     //    Shipping Fee = Base Fee + (Rate per km * Distance) + (Rate per kg * Weight)
+    @Column(nullable = false)
     long totalAmount;
+
     String orderStatus;
     String paymentStatus;
     String note;

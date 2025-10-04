@@ -2,6 +2,9 @@ package com.cvv.scm_link.controller;
 
 import java.util.List;
 
+import com.cvv.scm_link.dto.response.BatchDetailDTO;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -41,6 +44,13 @@ public class InventoryLocationDetailController
     public APIResponse<List<InventoryLocationDetailResponse>> findAll() {
         return APIResponse.<List<InventoryLocationDetailResponse>>builder()
                 .result(inventoryLocationDetailService.findAllIncludeProduct())
+                .build();
+    }
+
+    @GetMapping("/batchDetails/{productId}")
+    public APIResponse<List<BatchDetailDTO>> getBatchDetailsByProductId(@PathVariable("productId") String productId) {
+        return APIResponse.<List<BatchDetailDTO>>builder()
+                .result(inventoryLocationDetailService.getBatchDetails(productId))
                 .build();
     }
 }

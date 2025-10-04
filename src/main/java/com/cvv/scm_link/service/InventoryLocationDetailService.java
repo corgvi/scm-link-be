@@ -3,6 +3,8 @@ package com.cvv.scm_link.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.cvv.scm_link.dto.response.BatchDetailDTO;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -78,11 +80,13 @@ public class InventoryLocationDetailService
                     .orElseThrow(() -> new AppException(ErrorCode.WAREHOUSE_LOCATION_NOT_IN_WAREHOUSE));
             inventoryLocationDetail = inventoryLocationDetailMapper.toEntity(dto);
             inventoryLocationDetail.setWarehouseLocation(location);
+            inventoryLocationDetail.setSellPrice((long) (dto.getCostPrice() + (dto.getCostPrice() * 0.4)));
             inventoryLocationDetail.setInventoryLevel(inventoryLevelRepository
                     .findByWarehouse_IdAndProduct_Id(warehouseId, productId)
                     .orElseThrow(() -> new AppException(ErrorCode.INVENTORY_LEVEL_NOT_FOUND)));
         } else {
             inventoryLocationDetail.setQuantity(inventoryLocationDetail.getQuantity() + dto.getQuantity());
+            inventoryLocationDetail.setQuantityAvailable(inventoryLocationDetail.getQuantityAvailable() + dto.getQuantity());
         }
 
         inventoryLocationDetail = inventoryLocationDetailRepository.save(inventoryLocationDetail);
@@ -107,5 +111,10 @@ public class InventoryLocationDetailService
             inventoryLocationDetailResponseList.add(inventoryLocationDetailResponse);
         });
         return inventoryLocationDetailResponseList;
+    }
+
+    public List<BatchDetailDTO> getBatchDetails(String productId) {
+        productRepository.findById(productId).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+        return inventoryLocationDetailRepository.getBatchDetails(productId);
     }
 }

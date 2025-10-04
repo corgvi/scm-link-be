@@ -1,14 +1,14 @@
 package com.cvv.scm_link.repository;
 
-import java.util.List;
-import java.util.Optional;
-
+import com.cvv.scm_link.dto.response.BatchDetailDTO;
+import com.cvv.scm_link.entity.InventoryLocationDetail;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.cvv.scm_link.entity.InventoryLocationDetail;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface InventoryLocationDetailRepository extends BaseRepository<InventoryLocationDetail, String> {
@@ -22,7 +22,24 @@ public interface InventoryLocationDetailRepository extends BaseRepository<Invent
 
     @Query("select ild from InventoryLocationDetail ild " + "join ild.inventoryLevel il "
             + "join il.product p "
-            + "where p.id = :productId and ild.quantity > 0 "
+            + "where p.id = :productId and ild.quantityAvailable > 0 "
             + "order by coalesce(ild.expiryDate, '9999-12-31'), ild.createdAt")
     List<InventoryLocationDetail> findByFEFOOrFIFO(@Param("productId") String productId, Pageable pageable);
+
+
+    @Query(
+            """
+	SELECT new com.cvv.scm_link.dto.response.BatchDetailDTO(
+		ild.batchNumber,
+		ild.createdAt,
+		ild.expiryDate,
+		ild.quantity,
+		ild.costPrice,
+		ild.sellPrice,
+		(ild.quantity * ild.costPrice)
+	)
+	FROM InventoryLocationDetail ild
+	WHERE ild.inventoryLevel.product.id = :productId
+""")
+    List<BatchDetailDTO> getBatchDetails(@Param("productId") String productId);
 }

@@ -20,9 +20,11 @@ import lombok.experimental.SuperBuilder;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class InventoryLocationDetail extends BaseEntity {
     int quantity;
+    int quantityAvailable;
     String batchNumber;
     LocalDate expiryDate;
     Long costPrice;
+    Long sellPrice;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "inventoryLevel_id")

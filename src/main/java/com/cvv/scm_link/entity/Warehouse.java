@@ -23,7 +23,7 @@ public class Warehouse extends BaseEntity {
     String contactPhone;
     double latitude;
     double longitude;
-    boolean isActive;
+    boolean active;
 
     @OneToMany(mappedBy = "warehouse", cascade = CascadeType.ALL)
     List<InventoryLevel> inventoryLevels;

@@ -23,5 +23,6 @@ public class OrderResponse extends BaseDTO {
     String orderStatus;
     String paymentStatus;
     String note;
+
     UserResponse user;
 }

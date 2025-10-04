@@ -17,7 +17,10 @@ public class ProductCreateRequest {
 
     String description;
     String imageUrl;
+
+    @NotBlank(message = "WEIGHT_INVALID")
     String weightG;
+
     String lengthCm;
     String widthCm;
     String heightCm;

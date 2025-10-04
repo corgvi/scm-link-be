@@ -90,6 +90,7 @@ public class ReceivingNoteService
 
             InventoryLocationDetailRequest inventoryLocationDetailRequest = InventoryLocationDetailRequest.builder()
                     .quantity(p.getQuantity())
+                    .quantityAvailable(p.getQuantity())
                     .batchNumber(p.getBatchNumber())
                     .costPrice(p.getCostPrice())
                     .expiryDate(p.getExpiryDate())
@@ -113,10 +114,5 @@ public class ReceivingNoteService
                 .sum());
         receivingNote = repository.save(receivingNote);
         return receivingNoteMapper.toDTO(receivingNote);
-    }
-
-    @Override
-    public ReceivingNoteResponse update(ReceivingNoteRequest dto, String s) {
-        return super.update(dto, s);
     }
 }

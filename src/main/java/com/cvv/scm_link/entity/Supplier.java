@@ -27,7 +27,7 @@ public class Supplier extends BaseEntity {
     @Column(nullable = false, unique = true, name = "code", columnDefinition = "VARCHAR(10) COLLATE utf8mb4_unicode_ci")
     String code;
 
-    boolean isActive;
+    boolean active;
 
     @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL)
     List<Product> products;

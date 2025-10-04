@@ -9,13 +9,15 @@ import org.springframework.stereotype.Service;
 
 import com.cvv.scm_link.constant.StatusOrder;
 import com.cvv.scm_link.constant.StatusPayment;
-import com.cvv.scm_link.dto.request.OrderRequest;
+import com.cvv.scm_link.dto.request.OrderCreateRequest;
+import com.cvv.scm_link.dto.request.OrderUpdateRequest;
 import com.cvv.scm_link.dto.response.OrderResponse;
 import com.cvv.scm_link.entity.*;
 import com.cvv.scm_link.exception.AppException;
 import com.cvv.scm_link.exception.ErrorCode;
 import com.cvv.scm_link.mapper.BaseMapper;
 import com.cvv.scm_link.mapper.OrderMapper;
+import com.cvv.scm_link.mapper.UserMapper;
 import com.cvv.scm_link.repository.BaseRepository;
 import com.cvv.scm_link.repository.OrderRepository;
 import com.cvv.scm_link.repository.ProductRepository;
@@ -24,11 +26,13 @@ import com.cvv.scm_link.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class OrderService extends BaseServiceImpl<OrderRequest, OrderRequest, OrderResponse, Order, String> {
+public class OrderService
+        extends BaseServiceImpl<OrderCreateRequest, OrderUpdateRequest, OrderResponse, Order, String> {
 
     private static final long SHIPPING_BASE_FEE = 20000;
     private static final long SHIPPING_PER_KG_FEE = 2000;
@@ -39,16 +43,18 @@ public class OrderService extends BaseServiceImpl<OrderRequest, OrderRequest, Or
     ProductRepository productRepository;
     UserRepository userRepository;
     MapboxService mapboxService;
+    UserMapper userMapper;
 
     public OrderService(
             BaseRepository<Order, String> baseRepository,
-            BaseMapper<Order, OrderRequest, OrderRequest, OrderResponse> baseMapper,
+            BaseMapper<Order, OrderCreateRequest, OrderUpdateRequest, OrderResponse> baseMapper,
             OrderRepository orderRepository,
             OrderMapper orderMapper,
             OrderItemsService orderItemsService,
             ProductRepository productRepository,
             UserRepository userRepository,
-            MapboxService mapboxService) {
+            MapboxService mapboxService,
+            UserMapper userMapper) {
         super(baseRepository, baseMapper);
         this.orderRepository = orderRepository;
         this.orderMapper = orderMapper;
@@ -56,6 +62,7 @@ public class OrderService extends BaseServiceImpl<OrderRequest, OrderRequest, Or
         this.productRepository = productRepository;
         this.userRepository = userRepository;
         this.mapboxService = mapboxService;
+        this.userMapper = userMapper;
     }
 
     @Override
@@ -63,8 +70,9 @@ public class OrderService extends BaseServiceImpl<OrderRequest, OrderRequest, Or
         return super.findById(s);
     }
 
+    @Transactional(rollbackFor = AppException.class)
     @Override
-    public OrderResponse create(OrderRequest dto) {
+    public OrderResponse create(OrderCreateRequest dto) {
         User user = userRepository
                 .findByUsername(
                         SecurityContextHolder.getContext().getAuthentication().getName())
@@ -86,7 +94,7 @@ public class OrderService extends BaseServiceImpl<OrderRequest, OrderRequest, Or
         AtomicLong shippingFees = new AtomicLong(0);
         AtomicLong subTotal = new AtomicLong(0);
         orderRepository.save(order);
-        List<OrderItems> orderItemsList = orderItemsService.createItems(dto.getItems(), order);
+        List<OrderItems> orderItemsList = orderItemsService.createOrUpdate(dto.getItems(), order);
 
         Warehouse warehouse = orderItemsList
                 .getFirst()
@@ -94,6 +102,8 @@ public class OrderService extends BaseServiceImpl<OrderRequest, OrderRequest, Or
                 .getInventoryLevels()
                 .getFirst()
                 .getWarehouse();
+
+        if (Objects.isNull(warehouse)) throw new AppException(ErrorCode.WAREHOUSE_NOT_FOUND);
 
         double distanceKm = mapboxService
                 .getDistanceKm(warehouse.getLatitude(), warehouse.getLongitude(), coordinates[0], coordinates[1])
@@ -111,11 +121,44 @@ public class OrderService extends BaseServiceImpl<OrderRequest, OrderRequest, Or
 
         long totalAmount = shippingFees.get() + subTotal.get();
         order.setTotalAmount(totalAmount);
-        return orderMapper.toDTO(orderRepository.save(order));
+        OrderResponse orderResponse = orderMapper.toDTO(orderRepository.save(order));
+        orderResponse.setUser(userMapper.toDTO(user));
+        return orderResponse;
     }
 
+    @Transactional(rollbackFor = AppException.class)
     @Override
-    public OrderResponse update(OrderRequest dto, String s) {
-        return super.update(dto, s);
+    public OrderResponse update(OrderUpdateRequest dto, String id) {
+        Order order = orderRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
+        if (dto.getShippingAddress() != null && dto.getShippingAddress().trim().isEmpty())
+            throw new AppException(ErrorCode.ADDRESS_IS_REQUIRED);
+        if (dto.getCustomerName() != null && !dto.getCustomerName().trim().isEmpty())
+            throw new AppException(ErrorCode.NAME_INVALID);
+        if (dto.getCustomerPhone() != null && !dto.getCustomerPhone().trim().isEmpty())
+            throw new AppException(ErrorCode.PHONE_NUMBER_INVALID);
+        order.setOrderStatus(dto.getOrderStatus());
+        order.setShippingAddress(dto.getShippingAddress());
+        order.setCustomerName(dto.getCustomerName());
+        order.setCustomerPhone(dto.getCustomerPhone());
+        order.setCustomerEmail(dto.getCustomerEmail());
+        order.setNote(dto.getNote());
+        if (dto.getOrderStatus().equalsIgnoreCase(StatusOrder.ORDER_SHIPPING)) {
+            order.setOrderStatus(StatusOrder.ORDER_SHIPPING);
+            order.setPaymentStatus(StatusPayment.PAYMENT_PENDING);
+        } else if (dto.getOrderStatus().equalsIgnoreCase(StatusOrder.ORDER_DELIVERED) && order.getPaymentStatus().equals(StatusPayment.PAYMENT_PAID)) {
+            order.setPaymentStatus(StatusPayment.PAYMENT_PAID);
+            order.setOrderStatus(StatusOrder.ORDER_COMPLETED);
+        } else if (dto.getOrderStatus().equalsIgnoreCase(StatusOrder.ORDER_CANCELLED)) {
+            order.setPaymentStatus(StatusPayment.PAYMENT_REFUND);
+            order.setOrderStatus(StatusOrder.ORDER_CANCELLED);
+        } else if (dto.getOrderStatus().equalsIgnoreCase(StatusOrder.ORDER_DELIVERED)) {
+            order.setPaymentStatus(StatusPayment.PAYMENT_PENDING);
+            order.setOrderStatus(StatusOrder.ORDER_DELIVERED);
+        } else {
+            order.setOrderStatus(StatusOrder.ORDER_PROCESSING);
+            order.setPaymentStatus(StatusPayment.PAYMENT_PENDING);
+        }
+        List<OrderItems> orderItemsList = orderItemsService.createOrUpdate(dto.getItems(), order);
+        return null;
     }
 }

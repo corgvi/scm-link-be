@@ -1,5 +1,7 @@
 package com.cvv.scm_link.dto.response;
 
+import java.util.List;
+
 import com.cvv.scm_link.dto.BaseDTO;
 
 import lombok.*;
@@ -17,5 +19,6 @@ public class WarehouseResponse extends BaseDTO {
     String contactPhone;
     String latitude;
     String longitude;
-    Boolean isActive;
+    Boolean active;
+    List<WarehouseLocationResponse> warehouseLocations;
 }

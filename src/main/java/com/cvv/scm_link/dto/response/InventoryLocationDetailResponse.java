@@ -21,6 +21,7 @@ public class InventoryLocationDetailResponse extends BaseDTO {
     String batchNumber;
     LocalDateTime expiryDate;
     Long costPrice;
+    Long sellPrice;
     WarehouseLocationResponse warehouse;
     ProductResponse product;
 }

@@ -49,7 +49,8 @@ public class MapboxService {
                     double distanceMeters = response.getRoutes().get(0).getDistance();
                     log.info("Distance calculated: {} km", distanceMeters / 1000);
                     return distanceMeters / 1000; // Convert m -> km
-                });
+                })
+                .defaultIfEmpty(0.0);
     }
 
     public Mono<double[]> getCoordinatesFromAddress(String address) {
@@ -71,6 +72,7 @@ public class MapboxService {
                     double lon = center.get(0).asDouble();
                     double lat = center.get(1).asDouble();
                     return new double[] {lat, lon};
-                });
+                })
+                .defaultIfEmpty(new double[] {0.0, 0.0});
     }
 }
