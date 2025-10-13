@@ -1,20 +1,20 @@
 package com.cvv.scm_link.controller;
 
-import com.cvv.scm_link.dto.response.APIResponse;
-import com.cvv.scm_link.dto.response.InventorySummaryDTO;
-import com.cvv.scm_link.service.InventoryLevelService;
-import lombok.AccessLevel;
-import lombok.experimental.FieldDefaults;
-import org.springframework.http.ResponseEntity;
+import java.util.List;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cvv.scm_link.dto.request.InventoryLevelRequest;
+import com.cvv.scm_link.dto.response.APIResponse;
 import com.cvv.scm_link.dto.response.InventoryLevelResponse;
+import com.cvv.scm_link.dto.response.InventorySummaryDTO;
 import com.cvv.scm_link.service.BaseService;
+import com.cvv.scm_link.service.InventoryLevelService;
 
-import java.util.List;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 
 @RestController
 @RequestMapping("/inventoryLevels")
@@ -25,14 +25,15 @@ public class InventoryLevelController
     InventoryLevelService inventoryLevelService;
 
     public InventoryLevelController(
-            BaseService<InventoryLevelRequest, InventoryLevelRequest, InventoryLevelResponse, String> baseService, InventoryLevelService inventoryLevelService) {
+            BaseService<InventoryLevelRequest, InventoryLevelRequest, InventoryLevelResponse, String> baseService,
+            InventoryLevelService inventoryLevelService) {
         super(baseService);
         this.inventoryLevelService = inventoryLevelService;
     }
 
     @GetMapping("/summary")
     public APIResponse<List<InventorySummaryDTO>> getInventoryLevels() {
-        return  APIResponse.<List<InventorySummaryDTO>>builder()
+        return APIResponse.<List<InventorySummaryDTO>>builder()
                 .result(inventoryLevelService.getInventorySummary())
                 .build();
     }

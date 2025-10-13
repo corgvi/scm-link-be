@@ -1,6 +1,9 @@
 package com.cvv.scm_link.dto.response;
 
+import java.util.List;
+
 import com.cvv.scm_link.dto.BaseDTO;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -14,16 +17,11 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class OrderResponse extends BaseDTO {
-    String customerName;
-    String customerPhone;
-    String customerEmail;
-    String shippingAddress;
-    int totalAmount;
-    String orderStatus;
-    String paymentStatus;
-    String note;
-    String orderCode;
-
-    UserResponse user;
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class OrderItemDetailResponse extends BaseDTO {
+    int quantity;
+    long priceAtOrder;
+    String orderId;
+    ProductResponse product;
+    List<OrderItemBatchAllocationResponse> batchAllocations;
 }

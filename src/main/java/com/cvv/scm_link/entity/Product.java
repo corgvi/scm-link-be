@@ -15,6 +15,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@Table(name = "product")
 public class Product extends BaseEntity {
     @Column(nullable = false, unique = true, name = "sku", columnDefinition = "VARCHAR(255) COLLATE utf8mb4_unicode_ci")
     String sku;

@@ -17,6 +17,9 @@ import lombok.experimental.SuperBuilder;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Table(name = "customer_order")
 public class Order extends BaseEntity {
+    @Column(unique = true, nullable = false)
+    String orderCode;
+
     @Column(nullable = false)
     String customerName;
 

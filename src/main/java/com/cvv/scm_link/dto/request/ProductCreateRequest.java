@@ -21,15 +21,15 @@ public class ProductCreateRequest {
     @NotBlank(message = "WEIGHT_INVALID")
     String weightG;
 
+    @NotBlank(message = "CODE_INVALID")
+    String code;
+
     String lengthCm;
     String widthCm;
     String heightCm;
 
     @NotBlank(message = "BRANCH_NAME_INVALID")
     String branchName;
-
-    @Size(min = 3, max = 3, message = "CODE_INVALID")
-    String code;
 
     @Size(min = 1, max = 3, message = "SIZE_INVALID")
     String size;

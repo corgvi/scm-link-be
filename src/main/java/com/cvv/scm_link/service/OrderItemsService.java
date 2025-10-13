@@ -3,14 +3,16 @@ package com.cvv.scm_link.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-import com.cvv.scm_link.constant.TransactionType;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cvv.scm_link.constant.TransactionType;
 import com.cvv.scm_link.dto.request.OrderItemsRequest;
-import com.cvv.scm_link.dto.response.OrderDetailResponse;
+import com.cvv.scm_link.dto.response.OrderItemDetailResponse;
 import com.cvv.scm_link.entity.*;
 import com.cvv.scm_link.exception.AppException;
 import com.cvv.scm_link.exception.ErrorCode;
@@ -26,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class OrderItemsService
-        extends BaseServiceImpl<OrderItemsRequest, OrderItemsRequest, OrderDetailResponse, OrderItems, String> {
+        extends BaseServiceImpl<OrderItemsRequest, OrderItemsRequest, OrderItemDetailResponse, OrderItems, String> {
 
     OrderItemsRepository orderItemsRepository;
     OrderItemsMapper orderItemsMapper;
@@ -39,13 +41,15 @@ public class OrderItemsService
 
     public OrderItemsService(
             BaseRepository<OrderItems, String> baseRepository,
-            BaseMapper<OrderItems, OrderItemsRequest, OrderItemsRequest, OrderDetailResponse> baseMapper,
+            BaseMapper<OrderItems, OrderItemsRequest, OrderItemsRequest, OrderItemDetailResponse> baseMapper,
             OrderItemsRepository orderItemsRepository,
             OrderItemsMapper orderItemsMapper,
             ProductRepository productRepository,
             OrderRepository orderRepository,
             InventoryLocationDetailRepository inventoryLocationDetailRepository,
-            InventoryLevelRepository inventoryLevelRepository, InventoryTransactionRepository inventoryTransactionRepository, OrderItemBatchAllocationService orderItemBatchAllocationService) {
+            InventoryLevelRepository inventoryLevelRepository,
+            InventoryTransactionRepository inventoryTransactionRepository,
+            OrderItemBatchAllocationService orderItemBatchAllocationService) {
         super(baseRepository, baseMapper);
         this.orderItemsRepository = orderItemsRepository;
         this.orderItemsMapper = orderItemsMapper;
@@ -58,19 +62,34 @@ public class OrderItemsService
     }
 
     @Override
-    public OrderDetailResponse findById(String s) {
+    public OrderItemDetailResponse findById(String s) {
         return super.findById(s);
+    }
+
+    public List<OrderItems> findAllByOrderId(String orderId) {
+        return orderItemsRepository.findAllByOrder_Id(orderId);
     }
 
     @Transactional(rollbackFor = AppException.class)
     public List<OrderItems> createOrUpdate(List<OrderItemsRequest> items, Order order) {
+
+        Set<String> products =
+                items.stream().map(OrderItemsRequest::getProductId).collect(Collectors.toSet());
+        List<OrderItems> existingItems = orderItemsRepository.findAllByOrder_Id(order.getId());
+        for (OrderItems existingItem : existingItems) {
+            if (!products.contains(existingItem.getProduct().getId())) {
+                rollbackAndDeleteOrderItem(existingItem);
+            }
+        }
+
         List<OrderItems> orderItemsList = new ArrayList<>();
         items.forEach(dto -> {
             InventoryLevel inventoryLevel = inventoryLevelRepository
                     .findByProduct_Id(dto.getProductId())
                     .orElseThrow(() -> new AppException(ErrorCode.INVENTORY_LEVEL_NOT_FOUND));
 
-            Optional<OrderItems> existingOrderItem = orderItemsRepository.findByOrder_IdAndProduct_Id(order.getId(), dto.getProductId());
+            Optional<OrderItems> existingOrderItem =
+                    orderItemsRepository.findByOrder_IdAndProduct_Id(order.getId(), dto.getProductId());
             if (existingOrderItem.isEmpty()) {
                 if (dto.getQuantity() > inventoryLevel.getQuantityAvailable()) {
                     throw new AppException(ErrorCode.PRODUCT_EXCEEDS_ALLOWABLE);
@@ -91,11 +110,12 @@ public class OrderItemsService
     }
 
     @Override
-    public OrderDetailResponse update(OrderItemsRequest dto, String s) {
+    public OrderItemDetailResponse update(OrderItemsRequest dto, String s) {
         return super.update(dto, s);
     }
 
-    private void createOrderItem(OrderItemsRequest dto, Order order, InventoryLevel inventoryLevel, List<OrderItems> orderItemsList) {
+    private void createOrderItem(
+            OrderItemsRequest dto, Order order, InventoryLevel inventoryLevel, List<OrderItems> orderItemsList) {
         OrderItems orderItems = orderItemsMapper.toEntity(dto);
 
         int totalQty = 0;
@@ -146,13 +166,18 @@ public class OrderItemsService
                 .quantityChange(dto.getQuantity())
                 .currentQuantity(inventoryLevel.getQuantityOnHand())
                 .relateEntityId(order.getId())
-                .note("Allocate for order: " + order.getId())
+                .note("Allocate for order: " + order.getOrderCode())
                 .build();
         inventoryTransactionRepository.save(inventoryTransaction);
-
     }
 
-    private void increaseOrderItem(OrderItemsRequest dto, Optional<OrderItems> existingOrderItem, InventoryLevel inventoryLevel, int quantityDiff, OrderItems existingItem, Order order) {
+    private void increaseOrderItem(
+            OrderItemsRequest dto,
+            Optional<OrderItems> existingOrderItem,
+            InventoryLevel inventoryLevel,
+            int quantityDiff,
+            OrderItems existingItem,
+            Order order) {
         int originalDiff = quantityDiff;
 
         while (quantityDiff > 0) {
@@ -170,7 +195,8 @@ public class OrderItemsService
             OrderItemBatchAllocation orderItemBatchAllocation = OrderItemBatchAllocation.builder()
                     .quantityAllocated(allocateQty)
                     .build();
-            orderItemBatchAllocationService.createOrUpdate(existingOrderItem.get().getId(), inventoryLocationDetail.getId(), orderItemBatchAllocation);
+            orderItemBatchAllocationService.createOrUpdate(
+                    existingOrderItem.get().getId(), inventoryLocationDetail.getId(), orderItemBatchAllocation);
 
             quantityDiff -= allocateQty;
         }
@@ -193,17 +219,26 @@ public class OrderItemsService
         inventoryTransactionRepository.save(inventoryTransaction);
     }
 
-    private void decreaseOrderItem(Optional<OrderItems> existingOrderItem, InventoryLevel inventoryLevel, int quantityDiff, Order order, OrderItemsRequest dto, OrderItems existingItem) {
+    private void decreaseOrderItem(
+            Optional<OrderItems> existingOrderItem,
+            InventoryLevel inventoryLevel,
+            int quantityDiff,
+            Order order,
+            OrderItemsRequest dto,
+            OrderItems existingItem) {
         int rollbackQty = -quantityDiff;
 
-        List<OrderItemBatchAllocation> allocations = orderItemBatchAllocationService.findByOrderItem_Id(existingOrderItem.get().getId());
+        List<OrderItemBatchAllocation> allocations = orderItemBatchAllocationService.findByOrderItem_Id(
+                existingOrderItem.get().getId());
         for (OrderItemBatchAllocation allocation : allocations) {
             if (rollbackQty <= 0) break;
-            InventoryLocationDetail inventoryLocationDetail = inventoryLocationDetailRepository.findById(allocation.getInventoryLocationDetail().getId())
+            InventoryLocationDetail inventoryLocationDetail = inventoryLocationDetailRepository
+                    .findById(allocation.getInventoryLocationDetail().getId())
                     .orElseThrow(() -> new AppException(ErrorCode.INVENTORY_LOCATION_DETAIL_NOT_FOUND));
             int allocatedQty = allocation.getQuantityAllocated();
             int qtyToRollback = Math.min(rollbackQty, allocatedQty);
-            inventoryLocationDetail.setQuantityAvailable(inventoryLocationDetail.getQuantityAvailable() + qtyToRollback);
+            inventoryLocationDetail.setQuantityAvailable(
+                    inventoryLocationDetail.getQuantityAvailable() + qtyToRollback);
             inventoryLocationDetailRepository.save(inventoryLocationDetail);
             allocation.setQuantityAllocated(allocatedQty - qtyToRollback);
             if (allocation.getQuantityAllocated() == 0) {
@@ -232,5 +267,39 @@ public class OrderItemsService
         inventoryTransactionRepository.save(inventoryTransaction);
     }
 
-    // TODO: rollback order item when user cancel order item
+    private void rollbackAndDeleteOrderItem(OrderItems existingItem) {
+        InventoryLevel inventoryLevel = inventoryLevelRepository
+                .findByProduct_Id(existingItem.getProduct().getId())
+                .orElseThrow(() -> new AppException(ErrorCode.INVENTORY_LEVEL_NOT_FOUND));
+
+        int rollbackQty = existingItem.getQuantity();
+
+        List<OrderItemBatchAllocation> allocations =
+                orderItemBatchAllocationService.findByOrderItem_Id(existingItem.getId());
+        for (OrderItemBatchAllocation allocation : allocations) {
+            InventoryLocationDetail inventoryLocationDetail = inventoryLocationDetailRepository
+                    .findById(allocation.getInventoryLocationDetail().getId())
+                    .orElseThrow(() -> new AppException(ErrorCode.INVENTORY_LOCATION_DETAIL_NOT_FOUND));
+            int allocatedQty = allocation.getQuantityAllocated();
+            inventoryLocationDetail.setQuantityAvailable(inventoryLocationDetail.getQuantityAvailable() + allocatedQty);
+            inventoryLocationDetailRepository.save(inventoryLocationDetail);
+            orderItemBatchAllocationService.delete(allocation.getId());
+        }
+
+        inventoryLevel.setQuantityAvailable(inventoryLevel.getQuantityAvailable() + rollbackQty);
+        inventoryLevel.setQuantityReserved(inventoryLevel.getQuantityReserved() - rollbackQty);
+        inventoryLevelRepository.save(inventoryLevel);
+
+        orderItemsRepository.delete(existingItem);
+
+        InventoryTransaction inventoryTransaction = InventoryTransaction.builder()
+                .transactionType(TransactionType.ROLLBACK)
+                .inventoryLevel(inventoryLevel)
+                .quantityChange(rollbackQty)
+                .currentQuantity(inventoryLevel.getQuantityOnHand())
+                .relateEntityId(existingItem.getOrder().getId())
+                .note("Rollback for order item deletion: " + existingItem.getId())
+                .build();
+        inventoryTransactionRepository.save(inventoryTransaction);
+    }
 }

@@ -3,10 +3,10 @@ package com.cvv.scm_link.repository;
 import java.util.List;
 import java.util.Optional;
 
-import com.cvv.scm_link.dto.response.InventorySummaryDTO;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import com.cvv.scm_link.dto.response.InventorySummaryDTO;
 import com.cvv.scm_link.entity.InventoryLevel;
 
 @Repository

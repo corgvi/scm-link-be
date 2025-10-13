@@ -1,8 +1,7 @@
 package com.cvv.scm_link.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
@@ -14,14 +13,15 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class OrderItemBatchAllocation extends BaseEntity{
+@Table(name = "order_item_batch_allocation")
+public class OrderItemBatchAllocation extends BaseEntity {
     int quantityAllocated;
 
-    @ManyToOne(fetch = jakarta.persistence.FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "orderItem_id")
     OrderItems orderItem;
 
-    @ManyToOne(fetch = jakarta.persistence.FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "inventoryLocationDetail_id")
     InventoryLocationDetail inventoryLocationDetail;
 }

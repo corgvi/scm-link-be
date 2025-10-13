@@ -1,11 +1,9 @@
 package com.cvv.scm_link.entity;
 
 import java.time.LocalDate;
+import java.util.List;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -18,6 +16,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@Table(name = "inventory_location_detail")
 public class InventoryLocationDetail extends BaseEntity {
     int quantity;
     int quantityAvailable;
@@ -33,4 +32,7 @@ public class InventoryLocationDetail extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "warehouseLocation_id")
     WarehouseLocation warehouseLocation;
+
+    @OneToMany(mappedBy = "inventoryLocationDetail", cascade = CascadeType.ALL)
+    List<OrderItemBatchAllocation> orderItemBatchAllocations;
 }

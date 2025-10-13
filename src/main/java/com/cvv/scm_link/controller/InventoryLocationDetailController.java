@@ -2,7 +2,6 @@ package com.cvv.scm_link.controller;
 
 import java.util.List;
 
-import com.cvv.scm_link.dto.response.BatchDetailDTO;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cvv.scm_link.dto.request.InventoryLocationDetailRequest;
 import com.cvv.scm_link.dto.response.APIResponse;
+import com.cvv.scm_link.dto.response.BatchDetailDTO;
 import com.cvv.scm_link.dto.response.InventoryLocationDetailResponse;
 import com.cvv.scm_link.service.BaseService;
 import com.cvv.scm_link.service.InventoryLocationDetailService;

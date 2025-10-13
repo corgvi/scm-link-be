@@ -15,13 +15,14 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@Table(name = "warehouse_location")
 public class WarehouseLocation extends BaseEntity {
     String locationCode;
     String locationType;
     int maxCapacityKg;
     boolean available;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "warehouse_id")
     Warehouse warehouse;
 

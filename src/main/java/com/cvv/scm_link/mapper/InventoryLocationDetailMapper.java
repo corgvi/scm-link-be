@@ -22,5 +22,6 @@ public interface InventoryLocationDetailMapper
     @Override
     @Mapping(target = "warehouse", source = "warehouseLocation")
     @Mapping(target = "product", ignore = true)
+    @Mapping(target = "warehouseName", source = "warehouseLocation.warehouse.name")
     InventoryLocationDetailResponse toDTO(InventoryLocationDetail entity);
 }

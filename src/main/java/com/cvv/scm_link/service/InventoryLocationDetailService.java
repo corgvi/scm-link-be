@@ -3,12 +3,11 @@ package com.cvv.scm_link.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.cvv.scm_link.dto.response.BatchDetailDTO;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cvv.scm_link.dto.request.InventoryLocationDetailRequest;
+import com.cvv.scm_link.dto.response.BatchDetailDTO;
 import com.cvv.scm_link.dto.response.InventoryLocationDetailResponse;
 import com.cvv.scm_link.dto.response.ProductResponse;
 import com.cvv.scm_link.entity.InventoryLocationDetail;
@@ -86,7 +85,8 @@ public class InventoryLocationDetailService
                     .orElseThrow(() -> new AppException(ErrorCode.INVENTORY_LEVEL_NOT_FOUND)));
         } else {
             inventoryLocationDetail.setQuantity(inventoryLocationDetail.getQuantity() + dto.getQuantity());
-            inventoryLocationDetail.setQuantityAvailable(inventoryLocationDetail.getQuantityAvailable() + dto.getQuantity());
+            inventoryLocationDetail.setQuantityAvailable(
+                    inventoryLocationDetail.getQuantityAvailable() + dto.getQuantity());
         }
 
         inventoryLocationDetail = inventoryLocationDetailRepository.save(inventoryLocationDetail);

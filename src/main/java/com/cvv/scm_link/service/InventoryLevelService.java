@@ -1,11 +1,13 @@
 package com.cvv.scm_link.service;
 
-import com.cvv.scm_link.dto.response.InventorySummaryDTO;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cvv.scm_link.dto.request.InventoryLevelRequest;
 import com.cvv.scm_link.dto.response.InventoryLevelResponse;
+import com.cvv.scm_link.dto.response.InventorySummaryDTO;
 import com.cvv.scm_link.entity.InventoryLevel;
 import com.cvv.scm_link.entity.Product;
 import com.cvv.scm_link.entity.Warehouse;
@@ -21,8 +23,6 @@ import com.cvv.scm_link.repository.WarehouseRepository;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.List;
 
 @Slf4j
 @Service

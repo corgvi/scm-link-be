@@ -1,5 +1,7 @@
 package com.cvv.scm_link.dto.response;
 
+import java.util.List;
+
 import com.cvv.scm_link.dto.BaseDTO;
 
 import lombok.AccessLevel;
@@ -15,8 +17,14 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class OrderDetailResponse extends BaseDTO {
-    int quantity;
-    long priceAtOrder;
-    String orderId;
-    ProductResponse product;
+    String orderCode;
+    String customerName;
+    String customerPhone;
+    String customerEmail;
+    String shippingAddress;
+    long totalAmount;
+    String orderStatus;
+    String paymentStatus;
+    String note;
+    List<OrderItemDetailResponse> orderItems;
 }

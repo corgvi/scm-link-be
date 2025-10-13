@@ -1,14 +1,15 @@
 package com.cvv.scm_link.repository;
 
-import com.cvv.scm_link.dto.response.BatchDetailDTO;
-import com.cvv.scm_link.entity.InventoryLocationDetail;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Optional;
+import com.cvv.scm_link.dto.response.BatchDetailDTO;
+import com.cvv.scm_link.entity.InventoryLocationDetail;
 
 @Repository
 public interface InventoryLocationDetailRepository extends BaseRepository<InventoryLocationDetail, String> {
@@ -26,7 +27,6 @@ public interface InventoryLocationDetailRepository extends BaseRepository<Invent
             + "order by coalesce(ild.expiryDate, '9999-12-31'), ild.createdAt")
     List<InventoryLocationDetail> findByFEFOOrFIFO(@Param("productId") String productId, Pageable pageable);
 
-
     @Query(
             """
 	SELECT new com.cvv.scm_link.dto.response.BatchDetailDTO(
@@ -34,6 +34,7 @@ public interface InventoryLocationDetailRepository extends BaseRepository<Invent
 		ild.createdAt,
 		ild.expiryDate,
 		ild.quantity,
+		ild.quantityAvailable,
 		ild.costPrice,
 		ild.sellPrice,
 		(ild.quantity * ild.costPrice)

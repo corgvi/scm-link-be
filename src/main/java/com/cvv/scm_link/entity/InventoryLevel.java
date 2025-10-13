@@ -15,6 +15,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@Table(name = "inventory_level")
 public class InventoryLevel extends BaseEntity {
     int quantityOnHand;
     int quantityReserved;

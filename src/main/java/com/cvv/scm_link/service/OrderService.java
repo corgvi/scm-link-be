@@ -1,23 +1,27 @@
 package com.cvv.scm_link.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cvv.scm_link.constant.StatusOrder;
 import com.cvv.scm_link.constant.StatusPayment;
 import com.cvv.scm_link.dto.request.OrderCreateRequest;
 import com.cvv.scm_link.dto.request.OrderUpdateRequest;
+import com.cvv.scm_link.dto.response.OrderDetailResponse;
+import com.cvv.scm_link.dto.response.OrderItemBatchAllocationResponse;
+import com.cvv.scm_link.dto.response.OrderItemDetailResponse;
 import com.cvv.scm_link.dto.response.OrderResponse;
 import com.cvv.scm_link.entity.*;
 import com.cvv.scm_link.exception.AppException;
 import com.cvv.scm_link.exception.ErrorCode;
-import com.cvv.scm_link.mapper.BaseMapper;
-import com.cvv.scm_link.mapper.OrderMapper;
-import com.cvv.scm_link.mapper.UserMapper;
+import com.cvv.scm_link.mapper.*;
 import com.cvv.scm_link.repository.BaseRepository;
 import com.cvv.scm_link.repository.OrderRepository;
 import com.cvv.scm_link.repository.ProductRepository;
@@ -26,7 +30,6 @@ import com.cvv.scm_link.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
@@ -44,6 +47,9 @@ public class OrderService
     UserRepository userRepository;
     MapboxService mapboxService;
     UserMapper userMapper;
+    OrderItemBatchAllocationService orderItemBatchAllocationService;
+    InventoryLocationDetailMapper inventoryLocationDetailMapper;
+    private final OrderItemsMapper orderItemsMapper;
 
     public OrderService(
             BaseRepository<Order, String> baseRepository,
@@ -54,7 +60,10 @@ public class OrderService
             ProductRepository productRepository,
             UserRepository userRepository,
             MapboxService mapboxService,
-            UserMapper userMapper) {
+            UserMapper userMapper,
+            OrderItemBatchAllocationService orderItemBatchAllocationService,
+            InventoryLocationDetailMapper inventoryLocationDetailMapper,
+            OrderItemsMapper orderItemsMapper) {
         super(baseRepository, baseMapper);
         this.orderRepository = orderRepository;
         this.orderMapper = orderMapper;
@@ -63,11 +72,40 @@ public class OrderService
         this.userRepository = userRepository;
         this.mapboxService = mapboxService;
         this.userMapper = userMapper;
+        this.orderItemBatchAllocationService = orderItemBatchAllocationService;
+        this.inventoryLocationDetailMapper = inventoryLocationDetailMapper;
+        this.orderItemsMapper = orderItemsMapper;
     }
 
-    @Override
-    public OrderResponse findById(String s) {
-        return super.findById(s);
+    public OrderDetailResponse findOrderDetailById(String id) {
+        Order order = orderRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
+        List<OrderItems> items = orderItemsService.findAllByOrderId(order.getId());
+        List<OrderItemDetailResponse> orderItemDetailResponses = new ArrayList<>();
+        for (OrderItems item : items) {
+            List<OrderItemBatchAllocationResponse> orderItemBatchAllocationResponses =
+                    orderItemBatchAllocationService.findOrderItemDetails(item.getId());
+            OrderItemDetailResponse orderItemDetailResponse = orderItemsMapper.toDTO(item);
+            orderItemDetailResponse.setBatchAllocations(orderItemBatchAllocationResponses);
+            orderItemDetailResponses.add(orderItemDetailResponse);
+        }
+
+        return OrderDetailResponse.builder()
+                .id(order.getId())
+                .createdAt(order.getCreatedAt())
+                .updatedAt(order.getUpdatedAt())
+                .createdBy(order.getCreatedBy())
+                .updatedBy(order.getUpdatedBy())
+                .orderCode(order.getOrderCode())
+                .customerName(order.getCustomerName())
+                .customerPhone(order.getCustomerPhone())
+                .customerEmail(order.getCustomerEmail())
+                .shippingAddress(order.getShippingAddress())
+                .totalAmount(order.getTotalAmount())
+                .orderStatus(order.getOrderStatus())
+                .paymentStatus(order.getPaymentStatus())
+                .note(order.getNote())
+                .orderItems(orderItemDetailResponses)
+                .build();
     }
 
     @Transactional(rollbackFor = AppException.class)
@@ -78,6 +116,7 @@ public class OrderService
                         SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         Order order = orderMapper.toEntity(dto);
+        order.setOrderCode(generateCode());
         order.setOrderStatus(StatusOrder.ORDER_PROCESSING);
         order.setPaymentStatus(StatusPayment.PAYMENT_PENDING);
         order.setCustomer(user);
@@ -145,7 +184,8 @@ public class OrderService
         if (dto.getOrderStatus().equalsIgnoreCase(StatusOrder.ORDER_SHIPPING)) {
             order.setOrderStatus(StatusOrder.ORDER_SHIPPING);
             order.setPaymentStatus(StatusPayment.PAYMENT_PENDING);
-        } else if (dto.getOrderStatus().equalsIgnoreCase(StatusOrder.ORDER_DELIVERED) && order.getPaymentStatus().equals(StatusPayment.PAYMENT_PAID)) {
+        } else if (dto.getOrderStatus().equalsIgnoreCase(StatusOrder.ORDER_DELIVERED)
+                && order.getPaymentStatus().equals(StatusPayment.PAYMENT_PAID)) {
             order.setPaymentStatus(StatusPayment.PAYMENT_PAID);
             order.setOrderStatus(StatusOrder.ORDER_COMPLETED);
         } else if (dto.getOrderStatus().equalsIgnoreCase(StatusOrder.ORDER_CANCELLED)) {
@@ -158,7 +198,12 @@ public class OrderService
             order.setOrderStatus(StatusOrder.ORDER_PROCESSING);
             order.setPaymentStatus(StatusPayment.PAYMENT_PENDING);
         }
-        List<OrderItems> orderItemsList = orderItemsService.createOrUpdate(dto.getItems(), order);
-        return null;
+        orderItemsService.createOrUpdate(dto.getItems(), order);
+
+        return orderMapper.toDTO(orderRepository.save(order));
+    }
+
+    private String generateCode() {
+        return "ORD-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
     }
 }

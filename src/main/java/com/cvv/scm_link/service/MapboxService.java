@@ -66,7 +66,7 @@ public class MapboxService {
                 .map(json -> {
                     JsonNode features = json.get("features");
                     if (features == null || features.isEmpty()) {
-                        throw new RuntimeException("Address not found: " + address);
+                        throw new AppException(ErrorCode.ADDRESS_NOT_FOUND);
                     }
                     JsonNode center = features.get(0).get("center");
                     double lon = center.get(0).asDouble();

@@ -1,9 +1,8 @@
 package com.cvv.scm_link.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import java.util.List;
+
+import jakarta.persistence.*;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -16,6 +15,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@Table(name = "order_items")
 public class OrderItems extends BaseEntity {
     int quantity;
     long priceAtOrder;
@@ -27,4 +27,7 @@ public class OrderItems extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     Product product;
+
+    @OneToMany(mappedBy = "orderItem", cascade = CascadeType.ALL)
+    List<OrderItemBatchAllocation> orderItemBatchAllocations;
 }

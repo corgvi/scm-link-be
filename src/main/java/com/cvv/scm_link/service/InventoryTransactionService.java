@@ -112,4 +112,14 @@ public class InventoryTransactionService
         });
         return inventoryLocationDetailResponseList;
     }
+
+    public List<InventoryTransactionResponse> findAllByRelateEntityId(String relateEntityId) {
+        List<InventoryTransactionResponse> inventoryLocationDetailResponseList = new ArrayList<>();
+        inventoryTransactionRepository.findAllByRelateEntityId(relateEntityId).forEach(i -> {
+            InventoryLevel inventoryLevel = i.getInventoryLevel();
+            InventoryTransactionResponse inventoryTransactionResponse = inventoryTransactionMapper.toDTO(i);
+            inventoryTransactionResponse.setInventoryLevel(inventoryLevelMapper.toDTO(inventoryLevel));
+            inventoryLocationDetailResponseList.add(inventoryTransactionResponse);
+        });
+        return inventoryLocationDetailResponseList;    }
 }
