@@ -18,6 +18,8 @@ public class WarehouseRequest {
     @NotBlank(message = "ADDRESS_IS_REQUIRED")
     String address;
 
+    String city;
+
     @Pattern(regexp = "^(\\+84|0)(3|5|7|8|9)[0-9]{8}$", message = "PHONE_NUMBER_INVALID")
     String contactPhone;
 }

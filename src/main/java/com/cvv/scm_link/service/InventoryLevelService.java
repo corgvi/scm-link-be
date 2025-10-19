@@ -2,6 +2,8 @@ package com.cvv.scm_link.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -78,7 +80,11 @@ public class InventoryLevelService
         return inventoryLevelMapper.toDTO(inventoryLevel);
     }
 
-    public List<InventorySummaryDTO> getInventorySummary() {
-        return inventoryLevelRepository.getInventorySummary();
+    public Page<InventorySummaryDTO> getInventorySummary(Pageable pageable) {
+        return inventoryLevelRepository.getInventorySummary(pageable);
+    }
+
+    public InventoryLevel findByProductId(String id) {
+        return inventoryLevelRepository.findByProduct_Id(id).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
     }
 }

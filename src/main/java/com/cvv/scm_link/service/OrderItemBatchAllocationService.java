@@ -51,11 +51,11 @@ public class OrderItemBatchAllocationService {
         orderItemBatchAllocationRepository.delete(existingAllocation);
     }
 
-    protected List<OrderItemBatchAllocation> findByOrderItem_Id(String orderItemId) {
-        return orderItemBatchAllocationRepository.findByOrderItem_Id(orderItemId);
+    protected List<OrderItemBatchAllocation> findAllByOrderItem_Id(String orderItemId) {
+        return orderItemBatchAllocationRepository.findAllByOrderItem_Id(orderItemId);
     }
 
     protected List<OrderItemBatchAllocationResponse> findOrderItemDetails(String orderItemId) {
-        return orderItemBatchAllocationRepository.findOrderItemDetails(orderItemId);
+        return orderItemBatchAllocationRepository.findOrderItemDetails(orderItemId, false);
     }
 }

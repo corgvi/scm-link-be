@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -87,8 +89,8 @@ public class UserService extends BaseServiceImpl<UserCreateRequest, UserUpdateRe
 
     @PreAuthorize("hasRole('ADMIN')")
     @Override
-    public List<UserResponse> findAll() {
-        return super.findAll();
+    public Page<UserResponse> findAll(Pageable pageable) {
+        return super.findAll(pageable);
     }
 
     @PreAuthorize("hasRole('ADMIN')")

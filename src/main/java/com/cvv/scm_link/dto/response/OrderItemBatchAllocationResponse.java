@@ -9,6 +9,8 @@ public interface OrderItemBatchAllocationResponse {
 
     LocalDate getExpirationDate();
 
+    String getProductId();
+
     String getSku();
 
     String getProductName();

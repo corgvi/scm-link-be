@@ -3,6 +3,8 @@ package com.cvv.scm_link.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,11 +34,11 @@ import lombok.extern.slf4j.Slf4j;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class InventoryTransactionService
         extends BaseServiceImpl<
-                InventoryTransactionRequest,
-                InventoryTransactionRequest,
-                InventoryTransactionResponse,
-                InventoryTransaction,
-                String> {
+        InventoryTransactionRequest,
+        InventoryTransactionRequest,
+        InventoryTransactionResponse,
+        InventoryTransaction,
+        String> {
 
     InventoryTransactionRepository inventoryTransactionRepository;
     InventoryLevelRepository inventoryLevelRepository;
@@ -47,10 +49,10 @@ public class InventoryTransactionService
     public InventoryTransactionService(
             BaseRepository<InventoryTransaction, String> baseRepository,
             BaseMapper<
-                            InventoryTransaction,
-                            InventoryTransactionRequest,
-                            InventoryTransactionRequest,
-                            InventoryTransactionResponse>
+                    InventoryTransaction,
+                    InventoryTransactionRequest,
+                    InventoryTransactionRequest,
+                    InventoryTransactionResponse>
                     baseMapper,
             InventoryTransactionRepository inventoryTransactionRepository,
             InventoryLevelRepository inventoryLevelRepository,
@@ -102,24 +104,23 @@ public class InventoryTransactionService
     }
 
     @Override
-    public List<InventoryTransactionResponse> findAll() {
-        List<InventoryTransactionResponse> inventoryLocationDetailResponseList = new ArrayList<>();
-        inventoryTransactionRepository.findAll().forEach(i -> {
-            InventoryLevel inventoryLevel = i.getInventoryLevel();
-            InventoryTransactionResponse inventoryTransactionResponse = inventoryTransactionMapper.toDTO(i);
+    public Page<InventoryTransactionResponse> findAll(Pageable pageable) {
+        Page<InventoryTransaction> page = inventoryTransactionRepository.findAll(pageable);
+        return page.map(it -> {
+            InventoryLevel inventoryLevel = it.getInventoryLevel();
+            InventoryTransactionResponse inventoryTransactionResponse = inventoryTransactionMapper.toDTO(it);
             inventoryTransactionResponse.setInventoryLevel(inventoryLevelMapper.toDTO(inventoryLevel));
-            inventoryLocationDetailResponseList.add(inventoryTransactionResponse);
+            return inventoryTransactionResponse;
         });
-        return inventoryLocationDetailResponseList;
     }
 
-    public List<InventoryTransactionResponse> findAllByRelateEntityId(String relateEntityId) {
-        List<InventoryTransactionResponse> inventoryLocationDetailResponseList = new ArrayList<>();
-        inventoryTransactionRepository.findAllByRelateEntityId(relateEntityId).forEach(i -> {
-            InventoryLevel inventoryLevel = i.getInventoryLevel();
-            InventoryTransactionResponse inventoryTransactionResponse = inventoryTransactionMapper.toDTO(i);
+    public Page<InventoryTransactionResponse> findAllByRelateEntityId(String relateEntityId, Pageable pageable) {
+        Page<InventoryTransaction> page = inventoryTransactionRepository.findAllByRelateEntityId(relateEntityId, pageable);
+        return page.map(it -> {
+            InventoryLevel inventoryLevel = it.getInventoryLevel();
+            InventoryTransactionResponse inventoryTransactionResponse = inventoryTransactionMapper.toDTO(it);
             inventoryTransactionResponse.setInventoryLevel(inventoryLevelMapper.toDTO(inventoryLevel));
-            inventoryLocationDetailResponseList.add(inventoryTransactionResponse);
+            return inventoryTransactionResponse;
         });
-        return inventoryLocationDetailResponseList;    }
+    }
 }

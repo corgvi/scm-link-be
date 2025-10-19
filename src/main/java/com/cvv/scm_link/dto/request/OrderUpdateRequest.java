@@ -15,6 +15,7 @@ public class OrderUpdateRequest {
     String customerPhone;
     String customerEmail;
     String shippingAddress;
+    String shippingCity;
     String note;
     String orderStatus;
     String paymentStatus;

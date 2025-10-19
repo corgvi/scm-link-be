@@ -2,10 +2,12 @@ package com.cvv.scm_link.controller;
 
 import java.util.List;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.cvv.scm_link.dto.PageResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.web.bind.annotation.*;
 
 import com.cvv.scm_link.dto.request.InventoryLocationDetailRequest;
 import com.cvv.scm_link.dto.response.APIResponse;
@@ -41,9 +43,20 @@ public class InventoryLocationDetailController
     }
 
     @Override
-    public APIResponse<List<InventoryLocationDetailResponse>> findAll() {
-        return APIResponse.<List<InventoryLocationDetailResponse>>builder()
-                .result(inventoryLocationDetailService.findAllIncludeProduct())
+    public APIResponse<PageResponse<InventoryLocationDetailResponse>> findAll(@RequestParam(defaultValue = "1") int page,
+                                                                              @RequestParam(defaultValue = "10") int size,
+                                                                              @RequestParam(defaultValue = "createdAt,desc") String sort) {
+        int pageIndex = Math.max(page - 1, 0);
+
+        String[] sortParams = sort.split(",");
+        Sort.Direction direction = sortParams.length > 1
+                ? Sort.Direction.fromString(sortParams[1])
+                : Sort.Direction.ASC;
+
+        Pageable pageable = PageRequest.of(pageIndex, size, Sort.by(direction, sortParams[0]));
+        Page<InventoryLocationDetailResponse> result = inventoryLocationDetailService.findAllIncludeProduct(pageable);
+        return APIResponse.<PageResponse<InventoryLocationDetailResponse>>builder()
+                .result(PageResponse.of(result))
                 .build();
     }
 

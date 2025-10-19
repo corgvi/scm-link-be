@@ -16,6 +16,7 @@ import lombok.experimental.SuperBuilder;
 @Table(name = "order_item_batch_allocation")
 public class OrderItemBatchAllocation extends BaseEntity {
     int quantityAllocated;
+    boolean completed;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "orderItem_id")

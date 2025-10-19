@@ -1,7 +1,9 @@
 package com.cvv.scm_link.service;
 
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
+import com.cvv.scm_link.configuration.BBoxConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -25,9 +27,12 @@ public class MapboxService {
     @Value("${mapbox.access.token}")
     String mapboxApiKey;
 
+    final BBoxConfig bBoxConfig;
+
     final WebClient mapboxWebClient;
 
-    public MapboxService(WebClient.Builder webClientBuilder) {
+    public MapboxService(BBoxConfig bBoxConfig, WebClient.Builder webClientBuilder) {
+        this.bBoxConfig = bBoxConfig;
         this.mapboxWebClient =
                 webClientBuilder.baseUrl("https://api.mapbox.com/").build();
     }
@@ -53,10 +58,16 @@ public class MapboxService {
                 .defaultIfEmpty(0.0);
     }
 
-    public Mono<double[]> getCoordinatesFromAddress(String address) {
+    public Mono<double[]> getCoordinatesFromAddress(String address, String cityCode) {
+        List<Double> bbox = bBoxConfig.getBbox(cityCode);
+        String bboxParam = String.format("%f,%f,%f,%f", bbox.get(0), bbox.get(1), bbox.get(2), bbox.get(3));
+
         String url = String.format(
-                "/geocoding/v5/mapbox.places/%s.json?access_token=%s&limit=1&country=VN",
-                UriUtils.encodePath(address, StandardCharsets.UTF_8), mapboxApiKey);
+                "/geocoding/v5/mapbox.places/%s.json?access_token=%s&limit=1&country=VN&types=address,place&bbox=%s",
+                UriUtils.encodePath(address, StandardCharsets.UTF_8),
+                mapboxApiKey,
+                bboxParam
+        );
 
         return mapboxWebClient
                 .get()
@@ -71,8 +82,9 @@ public class MapboxService {
                     JsonNode center = features.get(0).get("center");
                     double lon = center.get(0).asDouble();
                     double lat = center.get(1).asDouble();
-                    return new double[] {lat, lon};
+                    log.info("Resolved address: {} => {}, {} + features: {}", address, lat, lon, features);
+                    return new double[]{lat, lon};
                 })
-                .defaultIfEmpty(new double[] {0.0, 0.0});
+                .defaultIfEmpty(new double[]{0.0, 0.0});
     }
 }

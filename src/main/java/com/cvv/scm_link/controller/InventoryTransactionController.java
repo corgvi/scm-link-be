@@ -1,7 +1,12 @@
 package com.cvv.scm_link.controller;
 
+import com.cvv.scm_link.dto.PageResponse;
 import jakarta.validation.Valid;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import com.cvv.scm_link.dto.request.InventoryTransactionAdjustmentRequest;
@@ -42,9 +47,20 @@ public class InventoryTransactionController
     }
 
     @GetMapping("/relatedEntity/{id}")
-    APIResponse<List<InventoryTransactionResponse>> getByRelatedEntityId(@PathVariable String id) {
-        return APIResponse.<List<InventoryTransactionResponse>>builder()
-                .result(inventoryTransactionService.findAllByRelateEntityId(id))
+    APIResponse<PageResponse<InventoryTransactionResponse>> getByRelatedEntityId(@PathVariable String id, @RequestParam(defaultValue = "1") int page,
+                                                                                 @RequestParam(defaultValue = "10") int size,
+                                                                                 @RequestParam(defaultValue = "createdAt,desc") String sort) {
+        int pageIndex = (page - 1) * size;
+
+        String[] sortParams = sort.split(",");
+        Sort.Direction direction = sortParams.length > 1 ?
+                Sort.Direction.fromString(sortParams[1]) : Sort.Direction.ASC;
+
+        Pageable pageable = PageRequest.of(pageIndex, size, Sort.by(direction, sortParams[0]));
+        Page<InventoryTransactionResponse> result = inventoryTransactionService.findAllByRelateEntityId(id, pageable);
+
+        return APIResponse.<PageResponse<InventoryTransactionResponse>>builder()
+                .result(PageResponse.of(result))
                 .build();
     }
 }

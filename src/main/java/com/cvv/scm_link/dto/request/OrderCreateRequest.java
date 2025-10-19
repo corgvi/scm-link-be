@@ -27,6 +27,9 @@ public class OrderCreateRequest {
     @NotBlank(message = "ADDRESS_IS_REQUIRED")
     String shippingAddress;
 
+    @NotBlank
+    String shippingCity;
+
     String note;
     List<OrderItemsRequest> items;
 }

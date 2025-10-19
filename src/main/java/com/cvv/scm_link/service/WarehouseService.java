@@ -44,7 +44,7 @@ public class WarehouseService
         warehouse.setActive(true);
 
         double[] coordinates =
-                mapboxService.getCoordinatesFromAddress(dto.getAddress()).block();
+                mapboxService.getCoordinatesFromAddress(dto.getAddress(), dto.getCity()).block();
         if (Objects.isNull(coordinates)) throw new RuntimeException("Convert to coordinates failed");
         warehouse.setLatitude(coordinates[0]);
         warehouse.setLongitude(coordinates[1]);

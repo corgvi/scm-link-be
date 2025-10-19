@@ -3,6 +3,8 @@ package com.cvv.scm_link.repository;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -35,5 +37,5 @@ public interface InventoryLevelRepository extends BaseRepository<InventoryLevel,
 	LEFT JOIN il.inventoryLocationDetails ild
 	GROUP BY p.sku, p.name, w.name
 """)
-    List<InventorySummaryDTO> getInventorySummary();
+    Page<InventorySummaryDTO> getInventorySummary(Pageable pageable);
 }

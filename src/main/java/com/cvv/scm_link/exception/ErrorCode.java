@@ -64,7 +64,9 @@ public enum ErrorCode {
     WEIGHT_INVALID(1048, HttpStatus.BAD_REQUEST, "Weight is invalid"),
     INVENTORY_LOCATION_DETAIL_NOT_FOUND(1049, HttpStatus.NOT_FOUND, "Inventory location detail not found"),
     ADDRESS_NOT_FOUND(1050, HttpStatus.NOT_FOUND, "Address not found"),
-    ;
+    ORDER_COMPLETED(1051, HttpStatus.BAD_REQUEST, "Order completed" ),
+    ORDER_CANCELLED(1052, HttpStatus.BAD_REQUEST, "Order cancelled"),
+    PAYMENT_STATUS_INVALID(1053, HttpStatus.BAD_REQUEST, "Payment status is invalid" ),;
 
     int code;
     HttpStatusCode httpStatusCode;

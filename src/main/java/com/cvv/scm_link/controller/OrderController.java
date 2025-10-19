@@ -23,12 +23,11 @@ public class OrderController extends BaseController<OrderCreateRequest, OrderUpd
 
     OrderService orderService;
 
-    public OrderController(
-            BaseService<OrderCreateRequest, OrderUpdateRequest, OrderResponse, String> baseService,
-            OrderService orderService) {
+    public OrderController(BaseService<OrderCreateRequest, OrderUpdateRequest, OrderResponse, String> baseService, OrderService orderService) {
         super(baseService);
         this.orderService = orderService;
     }
+
 
     @GetMapping("/details/{id}")
     public APIResponse<OrderDetailResponse> findOrderDetailById(@PathVariable String id) {

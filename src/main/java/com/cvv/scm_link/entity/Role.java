@@ -16,6 +16,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Role {
     @Id
+    @Column(name = "name", unique = true, nullable = false)
     String name;
 
     String description;
