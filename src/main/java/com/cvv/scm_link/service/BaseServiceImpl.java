@@ -1,10 +1,10 @@
 package com.cvv.scm_link.service;
 
 import java.io.Serializable;
-import java.util.List;
-import java.util.stream.Collectors;
 
-import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cvv.scm_link.entity.BaseEntity;
 import com.cvv.scm_link.exception.AppException;
@@ -21,11 +21,13 @@ public abstract class BaseServiceImpl<C, U, R, E extends BaseEntity, ID extends 
     protected final BaseRepository<E, ID> baseRepository;
     protected final BaseMapper<E, C, U, R> baseMapper;
 
+    @Transactional(readOnly = true)
     @Override
-    public List<R> findAll() {
-        return baseRepository.findAll().stream().map(baseMapper::toDTO).collect(Collectors.toList());
+    public Page<R> findAll(Pageable pageable) {
+        return baseRepository.findAll(pageable).map(baseMapper::toDTO);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public R findById(ID id) {
         E entity = baseRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_FOUND));
@@ -35,12 +37,13 @@ public abstract class BaseServiceImpl<C, U, R, E extends BaseEntity, ID extends 
     @Transactional
     @Override
     public R create(C dto) {
-        if (dto == null) throw new IllegalArgumentException("DTO must not be null");
+        if (dto == null) throw new AppException(ErrorCode.DTO_IS_NULL);
         E entity = baseMapper.toEntity(dto);
         entity = baseRepository.save(entity);
         return baseMapper.toDTO(entity);
     }
 
+    @Transactional
     @Override
     public R update(U dto, ID id) {
         E entity = baseRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_FOUND));

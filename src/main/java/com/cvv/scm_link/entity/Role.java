@@ -16,15 +16,15 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Role {
     @Id
+    @Column(name = "name", unique = true, nullable = false)
     String name;
 
     String description;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "role_permissions",
             joinColumns = @JoinColumn(name = "role_name"),
-            inverseJoinColumns = @JoinColumn(name = "permissions_name")
-    )
+            inverseJoinColumns = @JoinColumn(name = "permissions_name"))
     Set<Permission> permissions;
 }

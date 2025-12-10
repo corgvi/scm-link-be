@@ -1,27 +1,36 @@
 package com.cvv.scm_link.controller;
 
-import java.util.List;
-
-import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
+import com.cvv.scm_link.dto.PageResponse;
+import com.cvv.scm_link.dto.filter.UserFilter;
 import com.cvv.scm_link.dto.request.UserCreateRequest;
 import com.cvv.scm_link.dto.request.UserUpdateRequest;
 import com.cvv.scm_link.dto.response.APIResponse;
 import com.cvv.scm_link.dto.response.UserResponse;
+import com.cvv.scm_link.service.BaseService;
 import com.cvv.scm_link.service.UserService;
 
 import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 @RestController
 @RequestMapping("/users")
-@RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class UserController {
+public class UserController extends BaseController<UserCreateRequest, UserUpdateRequest, UserResponse, String> {
 
     UserService userService;
+
+    public UserController(
+            BaseService<UserCreateRequest, UserUpdateRequest, UserResponse, String> baseService,
+            UserService userService) {
+        super(baseService);
+        this.userService = userService;
+    }
 
     @GetMapping("/my-info")
     public APIResponse<UserResponse> getMyInfo() {
@@ -30,37 +39,41 @@ public class UserController {
                 .build();
     }
 
-    @GetMapping
-    public APIResponse<List<UserResponse>> getUsers() {
-        return APIResponse.<List<UserResponse>>builder()
-                .result(userService.findAll())
+    @GetMapping("/role/{role}")
+    public APIResponse<PageResponse<UserResponse>> getUsersByRole(
+            @PathVariable String role,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt,desc") String sort) {
+        int pageIndex = Math.max(page - 1, 0);
+
+        String[] sortParams = sort.split(",");
+        Sort.Direction direction =
+                sortParams.length > 1 ? Sort.Direction.fromString(sortParams[1]) : Sort.Direction.ASC;
+
+        Pageable pageable = PageRequest.of(pageIndex, size, Sort.by(direction, sortParams[0]));
+        Page<UserResponse> users = userService.findByRole(role, pageable);
+        return APIResponse.<PageResponse<UserResponse>>builder()
+                .result(PageResponse.of(users))
                 .build();
     }
 
-    @GetMapping("/{id}")
-    public APIResponse<UserResponse> getUserById(@PathVariable String id) {
-        return APIResponse.<UserResponse>builder()
-                .result(userService.findById(id))
-                .build();
-    }
+    @GetMapping("/filter")
+    public APIResponse<PageResponse<UserResponse>> filter(
+            UserFilter userFilter,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt,desc") String sort) {
+        int pageIndex = Math.max(page - 1, 0);
 
-    @PostMapping
-    public APIResponse<UserResponse> create(@RequestBody @Valid UserCreateRequest request) {
-        return APIResponse.<UserResponse>builder()
-                .result(userService.create(request))
-                .build();
-    }
+        String[] sortParams = sort.split(",");
+        Sort.Direction direction =
+                sortParams.length > 1 ? Sort.Direction.fromString(sortParams[1]) : Sort.Direction.ASC;
 
-    @PutMapping("/{id}")
-    public APIResponse<UserResponse> update(@RequestBody @Valid UserUpdateRequest request, @PathVariable String id) {
-        return APIResponse.<UserResponse>builder()
-                .result(userService.update(request, id))
-                .build();
-    }
+        Pageable pageable = PageRequest.of(pageIndex, size, Sort.by(direction, sortParams[0]));
 
-    @DeleteMapping("/{id}")
-    public APIResponse<Void> delete(@PathVariable String id) {
-        userService.deleteById(id);
-        return APIResponse.<Void>builder().build();
+        return APIResponse.<PageResponse<UserResponse>>builder()
+                .result(PageResponse.of(userService.filter(userFilter, pageable)))
+                .build();
     }
 }

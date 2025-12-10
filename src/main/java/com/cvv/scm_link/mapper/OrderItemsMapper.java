@@ -1,0 +1,17 @@
+package com.cvv.scm_link.mapper;
+
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
+
+import com.cvv.scm_link.dto.request.OrderItemsRequest;
+import com.cvv.scm_link.dto.response.OrderItemDetailResponse;
+import com.cvv.scm_link.entity.OrderItems;
+
+@Mapper(componentModel = "spring", unmappedSourcePolicy = ReportingPolicy.IGNORE)
+public interface OrderItemsMapper
+        extends BaseMapper<OrderItems, OrderItemsRequest, OrderItemsRequest, OrderItemDetailResponse> {
+    @Override
+    @Mapping(target = "product", ignore = true)
+    OrderItemDetailResponse toDTO(OrderItems entity);
+}

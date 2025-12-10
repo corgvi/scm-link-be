@@ -18,6 +18,9 @@ import com.cvv.scm_link.dto.response.IntrospectResponse;
 import com.cvv.scm_link.service.AuthenticationService;
 import com.nimbusds.jose.JOSEException;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Component
 public class CustomJWTDecoder implements JwtDecoder {
 
@@ -36,6 +39,7 @@ public class CustomJWTDecoder implements JwtDecoder {
                     IntrospectRequest.builder().token(token).build());
             if (!introspectResponse.isValid()) throw new JwtException("Invalid token");
         } catch (ParseException | JOSEException e) {
+            log.error(e.getMessage(), e);
             throw new RuntimeException(e);
         }
 

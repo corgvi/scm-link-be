@@ -1,17 +1,18 @@
 package com.cvv.scm_link.entity;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 import jakarta.persistence.*;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -25,11 +26,20 @@ public class User extends BaseEntity {
     String fullName;
     String phoneNumber;
     String address;
+    String city;
+    String imageUrl;
     Boolean isActive;
     LocalDate dob;
-    LocalDateTime createdAt;
-    LocalDateTime updatedAt;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     Set<Role> roles;
+
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
+    List<Order> orders;
+
+    @OneToMany(mappedBy = "driver", cascade = CascadeType.ALL)
+    List<Vehicle> vehicles;
+
+    @OneToMany(mappedBy = "assignedDriver", cascade = CascadeType.ALL)
+    List<Delivery> deliveries;
 }

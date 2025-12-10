@@ -1,16 +1,18 @@
 package com.cvv.scm_link.service;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.cvv.scm_link.dto.filter.UserFilter;
 import com.cvv.scm_link.dto.request.UserCreateRequest;
 import com.cvv.scm_link.dto.request.UserUpdateRequest;
 import com.cvv.scm_link.dto.response.UserResponse;
@@ -23,6 +25,7 @@ import com.cvv.scm_link.mapper.UserMapper;
 import com.cvv.scm_link.repository.BaseRepository;
 import com.cvv.scm_link.repository.RoleRepository;
 import com.cvv.scm_link.repository.UserRepository;
+import com.cvv.scm_link.repository.specification.UserSpecification;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
@@ -72,22 +75,23 @@ public class UserService extends BaseServiceImpl<UserCreateRequest, UserUpdateRe
         return userMapper.toDTO(user);
     }
 
-    @PreAuthorize("hasRole('ADMIN') or authentication.name == #username")
+    @PreAuthorize("(authentication.name == #username) || hasRole('ADMIN')")
     @Override
     public UserResponse update(UserUpdateRequest request, String username) {
 
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        User user =
+                userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
         userMapper.updateFromDTO(request, user);
-        user.setRoles(new HashSet<>(roleRepository.findAllById(request.getRoles())));
+        if (request.getRoles() != null) user.setRoles(new HashSet<>(roleRepository.findAllById(request.getRoles())));
         user = userRepository.save(user);
         return userMapper.toDTO(user);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @Override
-    public List<UserResponse> findAll() {
-        return super.findAll();
+    public Page<UserResponse> findAll(Pageable pageable) {
+        return super.findAll(pageable);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -107,5 +111,14 @@ public class UserService extends BaseServiceImpl<UserCreateRequest, UserUpdateRe
         String name = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUsername(name).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         return userMapper.toDTO(user);
+    }
+
+    public Page<UserResponse> findByRole(String roleName, Pageable pageable) {
+        return userRepository.findByRoleName(roleName, pageable).map(userMapper::toDTO);
+    }
+
+    public Page<UserResponse> filter(UserFilter filter, Pageable pageable) {
+        UserSpecification spec = new UserSpecification(filter);
+        return userRepository.findAll(spec, pageable).map(userMapper::toDTO);
     }
 }

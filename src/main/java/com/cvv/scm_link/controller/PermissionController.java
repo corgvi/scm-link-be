@@ -3,6 +3,7 @@ package com.cvv.scm_link.controller;
 import java.util.List;
 
 import jakarta.validation.Valid;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,7 +34,9 @@ public class PermissionController {
 
     @PutMapping("/{name}")
     APIResponse<PermissionResponse> update(@PathVariable String name, @RequestBody @Valid PermissionRequest request) {
-        return APIResponse.<PermissionResponse>builder().result(permissionService.update(request, name)).build();
+        return APIResponse.<PermissionResponse>builder()
+                .result(permissionService.update(request, name))
+                .build();
     }
 
     @GetMapping

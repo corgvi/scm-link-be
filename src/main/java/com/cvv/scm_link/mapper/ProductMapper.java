@@ -1,0 +1,40 @@
+package com.cvv.scm_link.mapper;
+
+import org.mapstruct.*;
+
+import com.cvv.scm_link.dto.request.ProductCreateRequest;
+import com.cvv.scm_link.dto.request.ProductUpdateRequest;
+import com.cvv.scm_link.dto.response.ProductDetailsResponse;
+import com.cvv.scm_link.dto.response.ProductResponse;
+import com.cvv.scm_link.entity.Product;
+
+@Mapper(
+        componentModel = "spring",
+        uses = {CategoryMapper.class, SupplierMapper.class})
+public interface ProductMapper
+        extends BaseMapper<Product, ProductCreateRequest, ProductUpdateRequest, ProductDetailsResponse> {
+    @Override
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "updatedBy", ignore = true)
+    @Mapping(target = "category", ignore = true)
+    @Mapping(target = "supplier", ignore = true)
+    @Mapping(target = "inventoryLevels", ignore = true)
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateFromDTO(ProductUpdateRequest dto, @MappingTarget Product entity);
+
+    @Override
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "updatedBy", ignore = true)
+    @Mapping(target = "category", ignore = true)
+    @Mapping(target = "supplier", ignore = true)
+    @Mapping(target = "inventoryLevels", ignore = true)
+    Product toEntity(ProductCreateRequest dto);
+
+    ProductResponse toProductResponse(Product entity);
+}

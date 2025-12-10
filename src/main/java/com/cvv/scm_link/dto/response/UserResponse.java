@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.Set;
 
 import com.cvv.scm_link.dto.BaseDTO;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
@@ -18,6 +19,7 @@ public class UserResponse extends BaseDTO {
     String email;
     String fullName;
     String phoneNumber;
+    String imageUrl;
     String address;
     Boolean isActive;
     LocalDate dob;

@@ -1,0 +1,50 @@
+package com.cvv.scm_link.repository;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import com.cvv.scm_link.dto.response.BatchDetailDTO;
+import com.cvv.scm_link.entity.InventoryLocationDetail;
+
+@Repository
+public interface InventoryLocationDetailRepository extends BaseRepository<InventoryLocationDetail, String> {
+    @Query("SELECT ild FROM InventoryLocationDetail ild JOIN FETCH ild.inventoryLevel il JOIN FETCH il.product p")
+    Page<InventoryLocationDetail> findAllWithProductInfo(Pageable pageable);
+
+    @Query(
+            "select ild from InventoryLocationDetail ild join fetch ild.inventoryLevel il join fetch il.product p join fetch il.warehouse w where ild.batchNumber = :batch and p.id = :pId and w.id = :wId")
+    Optional<InventoryLocationDetail> findBySameBatch(
+            @Param("pId") String productId, @Param("wId") String warehouseId, @Param("batch") String batch);
+
+    @Query("select ild from InventoryLocationDetail ild " + "join ild.inventoryLevel il "
+            + "join il.product p "
+            + "where p.id = :productId and ild.quantityAvailable > 0 "
+            + "order by coalesce(ild.expiryDate, '9999-12-31'), ild.createdAt")
+    List<InventoryLocationDetail> findByFEFOOrFIFO(@Param("productId") String productId, Pageable pageable);
+
+    @Query(
+            """
+	SELECT new com.cvv.scm_link.dto.response.BatchDetailDTO(
+		ild.batchNumber,
+		ild.createdAt,
+		ild.expiryDate,
+		ild.quantity,
+		ild.quantityAvailable,
+		ild.costPrice,
+		ild.sellPrice,
+		(ild.quantity * ild.costPrice),
+		wl.locationCode
+	)
+	FROM InventoryLocationDetail ild
+	JOIN WarehouseLocation wl
+	ON ild.warehouseLocation.id = wl.id
+	WHERE ild.inventoryLevel.product.id = :productId
+""")
+    List<BatchDetailDTO> getBatchDetails(@Param("productId") String productId);
+}

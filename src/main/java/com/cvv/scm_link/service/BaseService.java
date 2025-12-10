@@ -1,10 +1,12 @@
 package com.cvv.scm_link.service;
 
 import java.io.Serializable;
-import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface BaseService<C, U, R, ID extends Serializable> {
-    List<R> findAll();
+    Page<R> findAll(Pageable pageable);
 
     R findById(ID id);
 
