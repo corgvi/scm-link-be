@@ -1,10 +1,7 @@
 package com.cvv.scm_link.controller;
 
 import java.io.Serializable;
-import java.util.List;
 
-import com.cvv.scm_link.dto.BaseFilterRequest;
-import com.cvv.scm_link.dto.PageResponse;
 import jakarta.validation.Valid;
 
 import org.springframework.data.domain.Page;
@@ -13,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
+import com.cvv.scm_link.dto.PageResponse;
 import com.cvv.scm_link.dto.response.APIResponse;
 import com.cvv.scm_link.service.BaseService;
 
@@ -24,55 +22,19 @@ public abstract class BaseController<C, U, R, ID extends Serializable> {
     protected final BaseService<C, U, R, ID> baseService;
 
     @GetMapping
-    public APIResponse<PageResponse<R>> findAll(@RequestParam(defaultValue = "1") int page,
-                                        @RequestParam(defaultValue = "10") int size,
-                                        @RequestParam(defaultValue = "createdAt,desc") String sort) {
+    public APIResponse<PageResponse<R>> findAll(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt,desc") String sort) {
 
-            int pageIndex = Math.max(page - 1, 0);
-
-            String[] sortParams = sort.split(",");
-            Sort.Direction direction = sortParams.length > 1
-                    ? Sort.Direction.fromString(sortParams[1])
-                    : Sort.Direction.ASC;
-
-            Pageable pageable = PageRequest.of(pageIndex, size, Sort.by(direction, sortParams[0]));
-            Page<R> result = baseService.findAll(pageable);
-            return APIResponse.<PageResponse<R>>builder()
-                    .result(PageResponse.of(result))
-                    .build();
-    }
-//
-//    @GetMapping()
-//    public APIResponse<PageResponse<R>> findAllPaged(@RequestParam(defaultValue = "1") int page,
-//                                                     @RequestParam(defaultValue = "10") int size,
-//                                                     @RequestParam(defaultValue = "createdAt,desc") String sort) {
-//        int pageIndex = Math.max(page - 1, 0);
-//
-//        String[] sortParams = sort.split(",");
-//        Sort.Direction direction = sortParams.length > 1
-//                ? Sort.Direction.fromString(sortParams[1])
-//                : Sort.Direction.ASC;
-//
-//        Pageable pageable = PageRequest.of(pageIndex, size, Sort.by(direction, sortParams[0]));
-//        Page<R> result = baseService.findAll(pageable);
-//        return APIResponse.<PageResponse<R>>builder()
-//                .result(PageResponse.of(result))
-//                .build();
-//    }
-
-    @PostMapping("/filter")
-    public APIResponse<PageResponse<R>> filter(@RequestBody BaseFilterRequest filter, @RequestParam(defaultValue = "0") int page,
-                                               @RequestParam(defaultValue = "10") int size,
-                                               @RequestParam(defaultValue = "createdAt,desc") String sort) {
         int pageIndex = Math.max(page - 1, 0);
 
         String[] sortParams = sort.split(",");
-        Sort.Direction direction = sortParams.length > 1
-                ? Sort.Direction.fromString(sortParams[1])
-                : Sort.Direction.ASC;
+        Sort.Direction direction =
+                sortParams.length > 1 ? Sort.Direction.fromString(sortParams[1]) : Sort.Direction.ASC;
 
         Pageable pageable = PageRequest.of(pageIndex, size, Sort.by(direction, sortParams[0]));
-        Page<R> result = baseService.filter(filter ,pageable);
+        Page<R> result = baseService.findAll(pageable);
         return APIResponse.<PageResponse<R>>builder()
                 .result(PageResponse.of(result))
                 .build();

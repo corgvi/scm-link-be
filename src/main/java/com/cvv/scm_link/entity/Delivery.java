@@ -17,14 +17,34 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Delivery extends BaseEntity {
+    @Column(unique = true, nullable = false)
+    String code;
+
+    @Column(nullable = false)
     String deliveryStatus;
+
+    @Column(nullable = false)
     LocalDateTime scheduledPickupTime;
+
+    @Column(nullable = false)
     LocalDateTime actualPickupTime;
+
+    @Column(nullable = false)
     LocalDateTime scheduledDeliveryTime;
+
+    @Column(nullable = false)
     LocalDateTime actualDeliveryTime;
+
+    @Column(nullable = false)
     int totalDistanceKm;
+
+    @Column(nullable = false)
     int totalDurationMinutes;
+
+    @Column(nullable = false)
     String note;
+
+    String optimizedOrder;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assigned_driver_id")

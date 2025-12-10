@@ -38,9 +38,12 @@ public interface InventoryLocationDetailRepository extends BaseRepository<Invent
 		ild.quantityAvailable,
 		ild.costPrice,
 		ild.sellPrice,
-		(ild.quantity * ild.costPrice)
+		(ild.quantity * ild.costPrice),
+		wl.locationCode
 	)
 	FROM InventoryLocationDetail ild
+	JOIN WarehouseLocation wl
+	ON ild.warehouseLocation.id = wl.id
 	WHERE ild.inventoryLevel.product.id = :productId
 """)
     List<BatchDetailDTO> getBatchDetails(@Param("productId") String productId);

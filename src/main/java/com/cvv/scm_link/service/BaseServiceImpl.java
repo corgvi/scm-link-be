@@ -1,13 +1,9 @@
 package com.cvv.scm_link.service;
 
 import java.io.Serializable;
-import java.util.List;
-import java.util.stream.Collectors;
 
-import com.cvv.scm_link.dto.BaseFilterRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cvv.scm_link.entity.BaseEntity;
@@ -29,24 +25,6 @@ public abstract class BaseServiceImpl<C, U, R, E extends BaseEntity, ID extends 
     @Override
     public Page<R> findAll(Pageable pageable) {
         return baseRepository.findAll(pageable).map(baseMapper::toDTO);
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public Page<R> filter(BaseFilterRequest filter, Pageable pageable) {
-        Specification<E> spec = Specification.allOf();
-
-        if (filter.getSearch() != null && !filter.getSearch().isEmpty()) {
-            spec = spec.and((root, query, cb) ->
-                    cb.like(cb.lower(root.get("name")), "%" + filter.getSearch().toLowerCase() + "%"));
-        }
-
-        if (filter.getFromDate() != null && filter.getToDate() != null) {
-            spec = spec.and((root, query, cb) ->
-                    cb.between(root.get("createdAt"), filter.getFromDate(), filter.getToDate()));
-        }
-
-        return baseRepository.findAll(spec, pageable).map(baseMapper::toDTO);
     }
 
     @Transactional(readOnly = true)

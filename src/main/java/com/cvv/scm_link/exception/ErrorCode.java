@@ -64,9 +64,17 @@ public enum ErrorCode {
     WEIGHT_INVALID(1048, HttpStatus.BAD_REQUEST, "Weight is invalid"),
     INVENTORY_LOCATION_DETAIL_NOT_FOUND(1049, HttpStatus.NOT_FOUND, "Inventory location detail not found"),
     ADDRESS_NOT_FOUND(1050, HttpStatus.NOT_FOUND, "Address not found"),
-    ORDER_COMPLETED(1051, HttpStatus.BAD_REQUEST, "Order completed" ),
+    ORDER_COMPLETED(1051, HttpStatus.BAD_REQUEST, "Order completed"),
     ORDER_CANCELLED(1052, HttpStatus.BAD_REQUEST, "Order cancelled"),
-    PAYMENT_STATUS_INVALID(1053, HttpStatus.BAD_REQUEST, "Payment status is invalid" ),;
+    PAYMENT_STATUS_INVALID(1053, HttpStatus.BAD_REQUEST, "Payment status is invalid"),
+    LICENSE_PLATE_NOT_FOUND(1054, HttpStatus.NOT_FOUND, "License plate not found"),
+    DELIVERY_ALREADY_FINALIZED(1055, HttpStatus.BAD_REQUEST, "Delivery already finalized"),
+    DELIVERY_NOT_FOUND(1056, HttpStatus.NOT_FOUND, "Delivery not found"),
+    CANNOT_UPDATE_ORDERS_WHILE_DELIVERING(1057, HttpStatus.BAD_REQUEST, "Cannot update orders while delivering"),
+    ROUTE_CALCULATION_FAILED(1058, HttpStatus.BAD_REQUEST, "Route calculation failed"),
+    INVALID_REQUEST(1059, HttpStatus.BAD_REQUEST, "DeliveryOrders list cannot be null or empty"),
+    DUPLICATE_ORDER_IN_DELIVERY(1060, HttpStatus.BAD_REQUEST, "Duplicate order"),
+    INVALID_DELIVERY_STATUS(1061, HttpStatus.BAD_REQUEST, "Invalid delivery status");
 
     int code;
     HttpStatusCode httpStatusCode;

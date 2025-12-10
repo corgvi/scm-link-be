@@ -1,6 +1,5 @@
 package com.cvv.scm_link.repository;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -27,7 +26,7 @@ public interface InventoryLevelRepository extends BaseRepository<InventoryLevel,
 		SUM(il.quantityOnHand),
 		COUNT(DISTINCT ild.batchNumber),
 		SUM(ild.quantity * ild.costPrice),
-		w.name,
+		w.id,
 		CASE WHEN SUM(il.quantityOnHand) > 0 THEN 'IN_STOCK' ELSE 'OUT_OF_STOCK' END,
 		p.id
 	)
@@ -35,7 +34,7 @@ public interface InventoryLevelRepository extends BaseRepository<InventoryLevel,
 	JOIN il.product p
 	JOIN il.warehouse w
 	LEFT JOIN il.inventoryLocationDetails ild
-	GROUP BY p.sku, p.name, w.name
+	GROUP BY p.sku, p.name, w.id
 """)
     Page<InventorySummaryDTO> getInventorySummary(Pageable pageable);
 }

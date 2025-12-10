@@ -22,6 +22,7 @@ import lombok.experimental.SuperBuilder;
 public class Warehouse extends BaseEntity {
     String name;
     String address;
+    String city;
     String contactPhone;
     double latitude;
     double longitude;

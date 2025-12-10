@@ -18,7 +18,7 @@ import lombok.experimental.SuperBuilder;
 @Table(name = "customer_order")
 public class Order extends BaseEntity {
     @Column(unique = true, nullable = false)
-    String orderCode;
+    String code;
 
     @Column(nullable = false)
     String customerName;
@@ -30,6 +30,9 @@ public class Order extends BaseEntity {
 
     @Column(nullable = false)
     String shippingAddress;
+
+    @Column(nullable = false)
+    String shippingCity;
 
     @Column(nullable = false)
     double shippingLatitude;
@@ -44,6 +47,7 @@ public class Order extends BaseEntity {
     String orderStatus;
     String paymentStatus;
     String note;
+    String warehouseId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")

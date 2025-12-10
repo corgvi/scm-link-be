@@ -1,14 +1,12 @@
 package com.cvv.scm_link.service;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cvv.scm_link.constant.TransactionType;
+import com.cvv.scm_link.dto.filter.TransactionFilter;
 import com.cvv.scm_link.dto.request.InventoryLevelRequest;
 import com.cvv.scm_link.dto.request.InventoryTransactionAdjustmentRequest;
 import com.cvv.scm_link.dto.request.InventoryTransactionRequest;
@@ -24,6 +22,7 @@ import com.cvv.scm_link.mapper.InventoryTransactionMapper;
 import com.cvv.scm_link.repository.BaseRepository;
 import com.cvv.scm_link.repository.InventoryLevelRepository;
 import com.cvv.scm_link.repository.InventoryTransactionRepository;
+import com.cvv.scm_link.repository.specification.TransactionSpecification;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
@@ -34,11 +33,11 @@ import lombok.extern.slf4j.Slf4j;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class InventoryTransactionService
         extends BaseServiceImpl<
-        InventoryTransactionRequest,
-        InventoryTransactionRequest,
-        InventoryTransactionResponse,
-        InventoryTransaction,
-        String> {
+                InventoryTransactionRequest,
+                InventoryTransactionRequest,
+                InventoryTransactionResponse,
+                InventoryTransaction,
+                String> {
 
     InventoryTransactionRepository inventoryTransactionRepository;
     InventoryLevelRepository inventoryLevelRepository;
@@ -49,10 +48,10 @@ public class InventoryTransactionService
     public InventoryTransactionService(
             BaseRepository<InventoryTransaction, String> baseRepository,
             BaseMapper<
-                    InventoryTransaction,
-                    InventoryTransactionRequest,
-                    InventoryTransactionRequest,
-                    InventoryTransactionResponse>
+                            InventoryTransaction,
+                            InventoryTransactionRequest,
+                            InventoryTransactionRequest,
+                            InventoryTransactionResponse>
                     baseMapper,
             InventoryTransactionRepository inventoryTransactionRepository,
             InventoryLevelRepository inventoryLevelRepository,
@@ -74,7 +73,7 @@ public class InventoryTransactionService
                 .orElseThrow(() -> new AppException(ErrorCode.INVENTORY_LEVEL_NOT_FOUND));
         InventoryTransaction inventoryTransaction = inventoryTransactionMapper.toEntity(dto);
         inventoryTransaction.setInventoryLevel(inventoryLevel);
-        inventoryTransaction.setRelateEntityId(inventoryLevel.getId());
+        inventoryTransaction.setRelatedEntityId(inventoryLevel.getId());
         inventoryTransaction.setTransactionType(TransactionType.RECEIVING);
         inventoryTransaction = inventoryTransactionRepository.save(inventoryTransaction);
         inventoryTransactionMapper.toDTO(inventoryTransaction);
@@ -93,7 +92,7 @@ public class InventoryTransactionService
         InventoryLevelResponse inventoryLevelResponse = inventoryLevelService.createOrUpdate(inventoryLevelRequest);
         InventoryTransaction inventoryTransaction = inventoryTransactionMapper.toEntityFromAdjustment(dto);
         inventoryTransaction.setInventoryLevel(inventoryLevel);
-        inventoryTransaction.setRelateEntityId(inventoryLevel.getId());
+        inventoryTransaction.setRelatedEntityId(inventoryLevel.getId());
         inventoryTransaction.setTransactionType(TransactionType.ADJUSTMENT);
         inventoryTransaction.setCurrentQuantity(inventoryLevelResponse.getQuantityOnHand());
         inventoryTransaction = inventoryTransactionRepository.save(inventoryTransaction);
@@ -115,12 +114,19 @@ public class InventoryTransactionService
     }
 
     public Page<InventoryTransactionResponse> findAllByRelateEntityId(String relateEntityId, Pageable pageable) {
-        Page<InventoryTransaction> page = inventoryTransactionRepository.findAllByRelateEntityId(relateEntityId, pageable);
+        Page<InventoryTransaction> page =
+                inventoryTransactionRepository.findAllByRelatedEntityId(relateEntityId, pageable);
         return page.map(it -> {
             InventoryLevel inventoryLevel = it.getInventoryLevel();
             InventoryTransactionResponse inventoryTransactionResponse = inventoryTransactionMapper.toDTO(it);
             inventoryTransactionResponse.setInventoryLevel(inventoryLevelMapper.toDTO(inventoryLevel));
             return inventoryTransactionResponse;
         });
+    }
+
+    public Page<InventoryTransactionResponse> filter(TransactionFilter filter, Pageable pageable) {
+        return inventoryTransactionRepository
+                .findAll(new TransactionSpecification(filter), pageable)
+                .map(baseMapper::toDTO);
     }
 }

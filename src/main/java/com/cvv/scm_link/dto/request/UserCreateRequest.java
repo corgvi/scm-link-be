@@ -27,6 +27,7 @@ public class UserCreateRequest {
     String email;
 
     String fullName;
+    String imageUrl;
 
     @Pattern(regexp = "^(\\+84|0)(3|5|7|8|9)[0-9]{8}$", message = "PHONE_NUMBER_INVALID")
     String phoneNumber;

@@ -6,11 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import com.cvv.scm_link.entity.InventoryTransaction;
 
-import java.util.List;
-
 @Repository
 public interface InventoryTransactionRepository extends BaseRepository<InventoryTransaction, String> {
-    Page<InventoryTransaction> findAllByRelateEntityId(String relateEntityId, Pageable pageable);
-
+    Page<InventoryTransaction> findAllByRelatedEntityId(String relateEntityId, Pageable pageable);
 }
-

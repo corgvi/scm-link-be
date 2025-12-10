@@ -18,6 +18,7 @@ public class ProductDetailsResponse extends BaseDTO {
     String sku;
     String name;
     String description;
+    Boolean active;
     String imageUrl;
     String weightG;
     String lengthCm;

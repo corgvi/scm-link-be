@@ -12,7 +12,7 @@ public class InventorySummaryDTO {
     Long totalQuantity;
     Long batchCount;
     Long totalValue;
-    String warehouseName;
+    String warehouseId;
     String status;
     String productId;
 
@@ -22,7 +22,7 @@ public class InventorySummaryDTO {
             Long quantityOnHand,
             Long batchCount,
             Long totalCost,
-            String warehouseName,
+            String warehouseId,
             String stockStatus,
             String productId) {
         this.sku = sku;
@@ -30,7 +30,7 @@ public class InventorySummaryDTO {
         this.totalQuantity = quantityOnHand;
         this.batchCount = batchCount;
         this.totalValue = totalCost;
-        this.warehouseName = warehouseName;
+        this.warehouseId = warehouseId;
         this.status = stockStatus;
         this.productId = productId;
     }

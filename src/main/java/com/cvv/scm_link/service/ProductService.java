@@ -5,10 +5,13 @@ import java.util.StringJoiner;
 
 import jakarta.persistence.LockModeType;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cvv.scm_link.dto.filter.ProductFilter;
 import com.cvv.scm_link.dto.request.ProductCreateRequest;
 import com.cvv.scm_link.dto.request.ProductUpdateRequest;
 import com.cvv.scm_link.dto.response.ProductDetailsResponse;
@@ -23,6 +26,7 @@ import com.cvv.scm_link.repository.BaseRepository;
 import com.cvv.scm_link.repository.CategoryRepository;
 import com.cvv.scm_link.repository.ProductRepository;
 import com.cvv.scm_link.repository.SupplierRepository;
+import com.cvv.scm_link.repository.specification.ProductSpecification;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
@@ -70,25 +74,26 @@ public class ProductService
                 .orElseThrow(() -> new AppException(ErrorCode.SUPPLIER_NOT_FOUND));
         entity.setCategory(category);
         entity.setSupplier(supplier);
-        entity.setSku(generateSku(dto.getSize(), category.getCode(), dto.getCode(), dto.getColor()));
+        entity.setActive(true);
+        entity.setSku(generateSku(dto.getSize(), category.getCode(), dto.getCode()));
         entity = productRepository.save(entity);
         return productMapper.toDTO(entity);
     }
 
-    private String generateSku(String size, String categoryCode, String productCode, String color) {
+    private String generateSku(String size, String categoryCode, String productCode) {
         StringJoiner sku = new StringJoiner("-");
         int lastIndexSku = 1;
         Product product = productRepository
-                .findByLastSku(productCode, categoryCode, size, color)
+                .findByLastSku(productCode, categoryCode, size)
                 .orElse(null);
         if (Objects.isNull(product)) {
-            sku.add(productCode).add(categoryCode).add(color).add(size).add(String.format("%03d", lastIndexSku));
+            sku.add(productCode).add(categoryCode).add(size).add(String.format("%03d", lastIndexSku));
         } else {
             String[] parts = product.getSku().split("-");
             if (parts.length == 5) {
                 lastIndexSku = Integer.parseInt(parts[4]) + 1;
             }
-            sku.add(productCode).add(categoryCode).add(color).add(size).add(String.format("%03d", lastIndexSku));
+            sku.add(productCode).add(categoryCode).add(size).add(String.format("%03d", lastIndexSku));
         }
 
         return sku.toString();
@@ -96,19 +101,40 @@ public class ProductService
 
     @Override
     @Transactional(rollbackFor = AppException.class)
-    public ProductDetailsResponse update(ProductUpdateRequest dto, String s) {
-        Product product =
-                productRepository.findById(s).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+    public ProductDetailsResponse update(ProductUpdateRequest dto, String id) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+
+        if (dto.getCode() != null) {
+            if (!dto.getCode().equals(product.getCode())) {
+                if (productRepository.existsByCode(dto.getCode())) {
+                    throw new AppException(ErrorCode.CODE_EXISTED);
+                }
+            }
+        }
+
+        if (dto.getCategoryCode() != null) {
+            Category category = categoryRepository.findByCode(dto.getCategoryCode())
+                    .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
+            product.setCategory(category);
+        }
+
+        if (dto.getSupplierCode() != null) {
+            Supplier supplier = supplierRepository.findByCode(dto.getSupplierCode())
+                    .orElseThrow(() -> new AppException(ErrorCode.SUPPLIER_NOT_FOUND));
+            product.setSupplier(supplier);
+        }
+
         productMapper.updateFromDTO(dto, product);
-        if (productRepository.existsByCode(dto.getCode())) throw new AppException(ErrorCode.CODE_EXISTED);
-        product.setCategory(categoryRepository
-                .findByCode(dto.getCategoryCode())
-                .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND)));
-        product.setSupplier(supplierRepository
-                .findByCode(dto.getSupplierCode())
-                .orElseThrow(() -> new AppException(ErrorCode.SUPPLIER_NOT_FOUND)));
-        product.setSku(generateSku(dto.getSize(), dto.getCategoryCode(), dto.getCode(), dto.getColor()));
+
         product = productRepository.save(product);
+
         return productMapper.toDTO(product);
+    }
+
+    public Page<ProductDetailsResponse> filter(ProductFilter filter, Pageable pageable) {
+        return productRepository
+                .findAll(new ProductSpecification(filter), pageable)
+                .map(productMapper::toDTO);
     }
 }

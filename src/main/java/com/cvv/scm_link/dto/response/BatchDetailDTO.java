@@ -18,6 +18,7 @@ public class BatchDetailDTO {
     Long costPrice;
     Long sellPrice;
     Long totalCost;
+    String locationCode;
 
     public BatchDetailDTO(
             String batchNumber,
@@ -27,7 +28,8 @@ public class BatchDetailDTO {
             int quantityAvailable,
             Long costPrice,
             Long sellPrice,
-            Long totalCost) {
+            Long totalCost,
+            String locationCode) {
         this.batchNumber = batchNumber;
         this.createdAt = createdAt;
         this.expiryDate = expiryDate;
@@ -36,5 +38,6 @@ public class BatchDetailDTO {
         this.costPrice = costPrice;
         this.sellPrice = sellPrice;
         this.totalCost = totalCost;
+        this.locationCode = locationCode;
     }
 }

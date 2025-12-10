@@ -1,5 +1,7 @@
 package com.cvv.scm_link.entity;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
@@ -20,8 +22,9 @@ public class DeliveryTrackingHistory extends BaseEntity {
     String statusCode;
     String statusDescription;
     String locationDescription;
-    long latitude;
-    long longitude;
+    double latitude;
+    double longitude;
+    LocalDateTime timestamp;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "delivery_id")

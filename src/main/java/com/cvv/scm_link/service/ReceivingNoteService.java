@@ -74,9 +74,6 @@ public class ReceivingNoteService
                 .findById(dto.getWarehouse_id())
                 .orElseThrow(() -> new AppException(ErrorCode.WAREHOUSE_NOT_FOUND));
         receivingNote.setWarehouse(warehouse);
-        receivingNote.setSupplier(supplierRepository
-                .findById(dto.getSupplier_id())
-                .orElseThrow(() -> new AppException(ErrorCode.SUPPLIER_NOT_FOUND)));
 
         if (dto.getProducts().isEmpty()) throw new AppException(ErrorCode.PRODUCT_IS_REQUIRED);
         dto.getProducts().forEach(p -> {
@@ -91,13 +88,12 @@ public class ReceivingNoteService
             InventoryLocationDetailRequest inventoryLocationDetailRequest = InventoryLocationDetailRequest.builder()
                     .quantity(p.getQuantity())
                     .quantityAvailable(p.getQuantity())
-                    .batchNumber(p.getBatchNumber())
                     .costPrice(p.getCostPrice())
                     .expiryDate(p.getExpiryDate())
                     .inventoryLevelId(inventoryLevelResponse.getId())
                     .warehouseLocationId(p.getWarehouseLocationId())
                     .build();
-            inventoryLocationDetailService.createOrUpdate(
+            inventoryLocationDetailService.create(
                     inventoryLocationDetailRequest, dto.getWarehouse_id(), p.getProductId());
 
             InventoryTransactionRequest inventoryTransaction = InventoryTransactionRequest.builder()

@@ -30,6 +30,7 @@ public class Product extends BaseEntity {
     String branchName;
     String color;
     String size;
+    boolean active;
 
     @Column(
             nullable = false,

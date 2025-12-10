@@ -1,7 +1,5 @@
 package com.cvv.scm_link.service;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -81,10 +79,17 @@ public class InventoryLevelService
     }
 
     public Page<InventorySummaryDTO> getInventorySummary(Pageable pageable) {
+
         return inventoryLevelRepository.getInventorySummary(pageable);
     }
 
     public InventoryLevel findByProductId(String id) {
-        return inventoryLevelRepository.findByProduct_Id(id).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+        return inventoryLevelRepository
+                .findByProduct_Id(id)
+                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
     }
+
+    //    public Page<InventorySummaryDTO> filter(InventoryFilter filter, Pageable pageable) {
+    //        return inventoryLevelRepository.getInventorySummary()
+    //    }
 }

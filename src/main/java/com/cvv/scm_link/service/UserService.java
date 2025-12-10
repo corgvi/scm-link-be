@@ -1,7 +1,6 @@
 package com.cvv.scm_link.service;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.springframework.dao.DataIntegrityViolationException;
@@ -13,6 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.cvv.scm_link.dto.filter.UserFilter;
 import com.cvv.scm_link.dto.request.UserCreateRequest;
 import com.cvv.scm_link.dto.request.UserUpdateRequest;
 import com.cvv.scm_link.dto.response.UserResponse;
@@ -25,6 +25,7 @@ import com.cvv.scm_link.mapper.UserMapper;
 import com.cvv.scm_link.repository.BaseRepository;
 import com.cvv.scm_link.repository.RoleRepository;
 import com.cvv.scm_link.repository.UserRepository;
+import com.cvv.scm_link.repository.specification.UserSpecification;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
@@ -110,5 +111,14 @@ public class UserService extends BaseServiceImpl<UserCreateRequest, UserUpdateRe
         String name = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUsername(name).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         return userMapper.toDTO(user);
+    }
+
+    public Page<UserResponse> findByRole(String roleName, Pageable pageable) {
+        return userRepository.findByRoleName(roleName, pageable).map(userMapper::toDTO);
+    }
+
+    public Page<UserResponse> filter(UserFilter filter, Pageable pageable) {
+        UserSpecification spec = new UserSpecification(filter);
+        return userRepository.findAll(spec, pageable).map(userMapper::toDTO);
     }
 }

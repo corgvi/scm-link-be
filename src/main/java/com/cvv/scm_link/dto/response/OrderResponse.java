@@ -19,11 +19,13 @@ public class OrderResponse extends BaseDTO {
     String customerPhone;
     String customerEmail;
     String shippingAddress;
+    String shippingCity;
     int totalAmount;
     String orderStatus;
     String paymentStatus;
     String note;
-    String orderCode;
+    String code;
+    String warehouseId;
 
     UserResponse user;
 }

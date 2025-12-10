@@ -19,26 +19,23 @@ public interface OrderItemBatchAllocationRepository extends JpaRepository<OrderI
     List<OrderItemBatchAllocation> findAllByOrderItem_Id(String orderItemId);
 
     @Query(
-            value = """
-        select
-            oiba.quantity_allocated as quantityAllocated,
-            ild.batch_number as batchNumber,
-            ild.expiry_date as expirationDate,
-            p.id as productId,
-            p.sku as sku,
-            p.name as productName
-        from order_item_batch_allocation oiba
-            join inventory_location_detail ild on oiba.inventory_location_detail_id = ild.id
-            join inventory_level il on ild.inventory_level_id = il.id
-            join product p on il.product_id = p.id
-        where oiba.order_item_id = :orderItemId
-          and (:includeCompleted = true or oiba.completed = false)
-        """,
-            nativeQuery = true
-    )
+            value =
+                    """
+		select
+			oiba.quantity_allocated as quantityAllocated,
+			ild.batch_number as batchNumber,
+			ild.expiry_date as expirationDate,
+			p.id as productId,
+			p.sku as sku,
+			p.name as productName
+		from order_item_batch_allocation oiba
+			join inventory_location_detail ild on oiba.inventory_location_detail_id = ild.id
+			join inventory_level il on ild.inventory_level_id = il.id
+			join product p on il.product_id = p.id
+		where oiba.order_item_id = :orderItemId
+		and (:includeCompleted = true or oiba.completed = true)
+		""",
+            nativeQuery = true)
     List<OrderItemBatchAllocationResponse> findOrderItemDetails(
-            @Param("orderItemId") String orderItemId,
-            @Param("includeCompleted") boolean includeCompleted
-    );
-
+            @Param("orderItemId") String orderItemId, @Param("includeCompleted") boolean includeCompleted);
 }

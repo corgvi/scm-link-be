@@ -18,8 +18,8 @@ public class SupplierResponse extends BaseDTO {
     String name;
     String contactPerson;
     String email;
-    String address;
     String phoneNumber;
+    String address;
     String taxId;
     String note;
     String code;

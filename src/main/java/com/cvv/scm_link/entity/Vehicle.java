@@ -21,7 +21,9 @@ public class Vehicle extends BaseEntity {
 
     String type;
     int capacityKg;
-    boolean isAvailable;
+
+    @Builder.Default
+    boolean isAvailable = true;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "driver_id")

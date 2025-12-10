@@ -20,9 +20,6 @@ public class InventoryLocationDetailRequest {
     @NotNull(message = "QUANTITY_IS_REQUIRED")
     Integer quantityAvailable;
 
-    @NotBlank(message = "BATCH_NUMBER_IS_REQUIRED")
-    String batchNumber;
-
     LocalDate expiryDate;
 
     @NotNull(message = "COST_PRICE_IS_REQUIRED")

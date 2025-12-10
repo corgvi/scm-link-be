@@ -26,6 +26,8 @@ public class User extends BaseEntity {
     String fullName;
     String phoneNumber;
     String address;
+    String city;
+    String imageUrl;
     Boolean isActive;
     LocalDate dob;
 

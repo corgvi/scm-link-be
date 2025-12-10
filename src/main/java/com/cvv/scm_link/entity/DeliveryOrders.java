@@ -5,6 +5,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
@@ -17,11 +19,13 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class DeliveryOrders extends BaseEntity {
-    int orderSequence;
     String itemStatus;
+
+    int orderSequence;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "delivery_id")
+    @JsonIgnore
     Delivery delivery;
 
     @ManyToOne(fetch = FetchType.LAZY)

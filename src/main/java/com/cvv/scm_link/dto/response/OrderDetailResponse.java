@@ -22,6 +22,7 @@ public class OrderDetailResponse extends BaseDTO {
     String customerPhone;
     String customerEmail;
     String shippingAddress;
+    String shippingCity;
     long totalAmount;
     String orderStatus;
     String paymentStatus;

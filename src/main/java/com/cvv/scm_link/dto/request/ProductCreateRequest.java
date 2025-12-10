@@ -34,7 +34,6 @@ public class ProductCreateRequest {
     @Size(min = 1, max = 3, message = "SIZE_INVALID")
     String size;
 
-    @NotBlank(message = "COLOR_INVALID")
     String color;
 
     @NotBlank(message = "CATEGORY_CODE_INVALID")

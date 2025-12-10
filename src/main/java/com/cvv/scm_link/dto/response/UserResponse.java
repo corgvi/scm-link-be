@@ -19,6 +19,7 @@ public class UserResponse extends BaseDTO {
     String email;
     String fullName;
     String phoneNumber;
+    String imageUrl;
     String address;
     Boolean isActive;
     LocalDate dob;

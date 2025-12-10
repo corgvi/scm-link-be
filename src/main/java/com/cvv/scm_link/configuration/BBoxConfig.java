@@ -1,12 +1,13 @@
 package com.cvv.scm_link.configuration;
 
-import lombok.Getter;
-import lombok.Setter;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.List;
-import java.util.Map;
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter

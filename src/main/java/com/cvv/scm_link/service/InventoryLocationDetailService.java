@@ -1,6 +1,5 @@
 package com.cvv.scm_link.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -70,26 +69,18 @@ public class InventoryLocationDetailService
     }
 
     @Transactional(rollbackFor = AppException.class)
-    public InventoryLocationDetailResponse createOrUpdate(
+    public InventoryLocationDetailResponse create (
             InventoryLocationDetailRequest dto, String warehouseId, String productId) {
-        InventoryLocationDetail inventoryLocationDetail = inventoryLocationDetailRepository
-                .findBySameBatch(productId, warehouseId, dto.getBatchNumber())
-                .orElse(null);
-        if (inventoryLocationDetail == null) {
+        InventoryLocationDetail inventoryLocationDetail = inventoryLocationDetailMapper.toEntity(dto);
             WarehouseLocation location = warehouseLocationRepository
                     .findByIdAndWarehouse_Id(dto.getWarehouseLocationId(), warehouseId)
                     .orElseThrow(() -> new AppException(ErrorCode.WAREHOUSE_LOCATION_NOT_IN_WAREHOUSE));
-            inventoryLocationDetail = inventoryLocationDetailMapper.toEntity(dto);
             inventoryLocationDetail.setWarehouseLocation(location);
             inventoryLocationDetail.setSellPrice((long) (dto.getCostPrice() + (dto.getCostPrice() * 0.4)));
             inventoryLocationDetail.setInventoryLevel(inventoryLevelRepository
                     .findByWarehouse_IdAndProduct_Id(warehouseId, productId)
                     .orElseThrow(() -> new AppException(ErrorCode.INVENTORY_LEVEL_NOT_FOUND)));
-        } else {
-            inventoryLocationDetail.setQuantity(inventoryLocationDetail.getQuantity() + dto.getQuantity());
-            inventoryLocationDetail.setQuantityAvailable(
-                    inventoryLocationDetail.getQuantityAvailable() + dto.getQuantity());
-        }
+            inventoryLocationDetail.setBatchNumber(generateBatchNumber());
 
         inventoryLocationDetail = inventoryLocationDetailRepository.save(inventoryLocationDetail);
         ProductResponse productResponse = productMapper.toProductResponse(
@@ -100,6 +91,10 @@ public class InventoryLocationDetailService
                 inventoryLocationDetailMapper.toDTO(inventoryLocationDetail);
         inventoryLocationDetailResponse.setProduct(productResponse);
         return inventoryLocationDetailResponse;
+    }
+
+    private String generateBatchNumber() {
+        return "B" + System.currentTimeMillis();
     }
 
     @Transactional(readOnly = true)
@@ -118,5 +113,4 @@ public class InventoryLocationDetailService
         productRepository.findById(productId).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
         return inventoryLocationDetailRepository.getBatchDetails(productId);
     }
-
 }

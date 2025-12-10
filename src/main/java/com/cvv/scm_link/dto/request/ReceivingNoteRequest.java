@@ -14,7 +14,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ReceivingNoteRequest {
     String warehouse_id;
-    String supplier_id;
 
     @NotNull(message = "TOTAL_ITEMS_IS_REQUIRED")
     Integer totalItemsExpected;

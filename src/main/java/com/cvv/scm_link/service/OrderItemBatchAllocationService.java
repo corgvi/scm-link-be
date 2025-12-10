@@ -56,6 +56,6 @@ public class OrderItemBatchAllocationService {
     }
 
     protected List<OrderItemBatchAllocationResponse> findOrderItemDetails(String orderItemId) {
-        return orderItemBatchAllocationRepository.findOrderItemDetails(orderItemId, false);
+        return orderItemBatchAllocationRepository.findOrderItemDetails(orderItemId, true);
     }
 }

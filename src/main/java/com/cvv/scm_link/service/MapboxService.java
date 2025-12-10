@@ -1,15 +1,19 @@
 package com.cvv.scm_link.service;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import com.cvv.scm_link.configuration.BBoxConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriUtils;
 
+import com.cvv.scm_link.configuration.BBoxConfig;
 import com.cvv.scm_link.dto.response.MapboxDirectionResponse;
+import com.cvv.scm_link.dto.response.MapboxMultiStopRouteInfo;
 import com.cvv.scm_link.exception.AppException;
 import com.cvv.scm_link.exception.ErrorCode;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -64,10 +68,7 @@ public class MapboxService {
 
         String url = String.format(
                 "/geocoding/v5/mapbox.places/%s.json?access_token=%s&limit=1&country=VN&types=address,place&bbox=%s",
-                UriUtils.encodePath(address, StandardCharsets.UTF_8),
-                mapboxApiKey,
-                bboxParam
-        );
+                UriUtils.encodePath(address, StandardCharsets.UTF_8), mapboxApiKey, bboxParam);
 
         return mapboxWebClient
                 .get()
@@ -83,8 +84,67 @@ public class MapboxService {
                     double lon = center.get(0).asDouble();
                     double lat = center.get(1).asDouble();
                     log.info("Resolved address: {} => {}, {} + features: {}", address, lat, lon, features);
-                    return new double[]{lat, lon};
+                    return new double[] {lat, lon};
                 })
-                .defaultIfEmpty(new double[]{0.0, 0.0});
+                .defaultIfEmpty(new double[] {0.0, 0.0});
+    }
+
+    public Mono<MapboxMultiStopRouteInfo> getOptimizedRoute(List<double[]> coordinates) {
+        if (coordinates == null || coordinates.size() < 2) {
+            throw new AppException(ErrorCode.ROUTE_NOT_FOUND);
+        }
+
+        // Chuyển list tọa độ thành chuỗi param
+        String coordString = coordinates.stream()
+                .map(coord -> String.format("%f,%f", coord[1], coord[0])) // lon,lat
+                .collect(Collectors.joining(";"));
+
+        String url = String.format(
+                "/optimized-trips/v1/mapbox/driving/%s?access_token=%s&source=first&destination=last&roundtrip=false&overview=full",
+                coordString, mapboxApiKey);
+
+        return mapboxWebClient
+                .get()
+                .uri(url)
+                .retrieve()
+                .bodyToMono(JsonNode.class)
+                .map(json -> {
+                    JsonNode trips = json.get("trips");
+                    if (trips == null || trips.isEmpty()) {
+                        throw new AppException(ErrorCode.ROUTE_NOT_FOUND);
+                    }
+
+                    JsonNode bestTrip = trips.get(0);
+                    double distanceKm = bestTrip.get("distance").asDouble() / 1000;
+                    double durationMin = bestTrip.get("duration").asDouble() / 60;
+
+                    List<Integer> order = new ArrayList<>();
+                    if (bestTrip.has("waypoint_order")) {
+                        bestTrip.get("waypoint_order").forEach(node -> order.add(node.asInt()));
+                    }
+
+                    log.info("Optimized route: {} km, {} min, order: {}", distanceKm, durationMin, order);
+                    return new MapboxMultiStopRouteInfo(distanceKm, durationMin, order);
+                })
+                .defaultIfEmpty(new MapboxMultiStopRouteInfo(0.0, 0.0, Collections.emptyList()));
+    }
+
+    public Mono<String> getAddressFromCoordinates(double lat, double lon) {
+        String url = String.format(
+                "/geocoding/v5/mapbox.places/%f,%f.json?access_token=%s&limit=1&language=vi", lon, lat, mapboxApiKey);
+
+        return mapboxWebClient
+                .get()
+                .uri(url)
+                .retrieve()
+                .bodyToMono(JsonNode.class)
+                .map(json -> {
+                    JsonNode features = json.get("features");
+                    if (features != null && !features.isEmpty()) {
+                        return features.get(0).get("place_name").asText();
+                    }
+                    return "Unknown location";
+                })
+                .defaultIfEmpty("Unknown location");
     }
 }
