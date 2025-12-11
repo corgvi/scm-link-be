@@ -24,20 +24,23 @@ public interface UserRepository extends BaseRepository<User, String> {
 
     @Query("SELECT u FROM User u JOIN u.roles r WHERE r.name = :roleName")
     Page<User> findByRoleName(@Param("roleName") String roleName, Pageable pageable);
+
     @Query("SELECT COUNT(u) FROM User u")
     long countCustomers();
 
-    @Query("""
-        SELECT COUNT(u) FROM User u
-        WHERE MONTH(u.createdAt) = MONTH(CURRENT_DATE)
-        AND YEAR(u.createdAt) = YEAR(CURRENT_DATE)
-    """)
+    @Query(
+            """
+		SELECT COUNT(u) FROM User u
+		WHERE MONTH(u.createdAt) = MONTH(CURRENT_DATE)
+		AND YEAR(u.createdAt) = YEAR(CURRENT_DATE)
+	""")
     long countNewCustomersThisMonth();
 
-    @Query("""
-        SELECT COUNT(u) FROM User u
-        WHERE MONTH(u.createdAt) = MONTH(CURRENT_DATE) - 1
-        AND YEAR(u.createdAt) = YEAR(CURRENT_DATE)
-    """)
+    @Query(
+            """
+		SELECT COUNT(u) FROM User u
+		WHERE MONTH(u.createdAt) = MONTH(CURRENT_DATE) - 1
+		AND YEAR(u.createdAt) = YEAR(CURRENT_DATE)
+	""")
     long countNewCustomersLastMonth();
 }

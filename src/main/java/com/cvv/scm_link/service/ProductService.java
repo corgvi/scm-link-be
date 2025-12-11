@@ -83,9 +83,8 @@ public class ProductService
     private String generateSku(String size, String categoryCode, String productCode) {
         StringJoiner sku = new StringJoiner("-");
         int lastIndexSku = 1;
-        Product product = productRepository
-                .findByLastSku(productCode, categoryCode, size)
-                .orElse(null);
+        Product product =
+                productRepository.findByLastSku(productCode, categoryCode, size).orElse(null);
         if (Objects.isNull(product)) {
             sku.add(productCode).add(categoryCode).add(size).add(String.format("%03d", lastIndexSku));
         } else {
@@ -102,8 +101,8 @@ public class ProductService
     @Override
     @Transactional(rollbackFor = AppException.class)
     public ProductDetailsResponse update(ProductUpdateRequest dto, String id) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+        Product product =
+                productRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
 
         if (dto.getCode() != null) {
             if (!dto.getCode().equals(product.getCode())) {
@@ -114,13 +113,15 @@ public class ProductService
         }
 
         if (dto.getCategoryCode() != null) {
-            Category category = categoryRepository.findByCode(dto.getCategoryCode())
+            Category category = categoryRepository
+                    .findByCode(dto.getCategoryCode())
                     .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
             product.setCategory(category);
         }
 
         if (dto.getSupplierCode() != null) {
-            Supplier supplier = supplierRepository.findByCode(dto.getSupplierCode())
+            Supplier supplier = supplierRepository
+                    .findByCode(dto.getSupplierCode())
                     .orElseThrow(() -> new AppException(ErrorCode.SUPPLIER_NOT_FOUND));
             product.setSupplier(supplier);
         }

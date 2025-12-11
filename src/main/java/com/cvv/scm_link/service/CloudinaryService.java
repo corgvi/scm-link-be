@@ -1,14 +1,16 @@
 package com.cvv.scm_link.service;
 
-import com.cloudinary.Cloudinary;
-import com.cloudinary.Uploader;
-import lombok.AccessLevel;
-import lombok.experimental.FieldDefaults;
+import java.io.IOException;
+import java.util.Map;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.util.Map;
+import com.cloudinary.Cloudinary;
+import com.cloudinary.Uploader;
+
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -29,8 +31,8 @@ public class CloudinaryService {
                 "use_filename", true,
                 "unique_filename", false,
                 "overwrite", true,
-                "resource_type", "auto"  // Tự detect image/video
-        );
+                "resource_type", "auto" // Tự detect image/video
+                );
 
         // Upload với error handling
         try {
@@ -43,10 +45,7 @@ public class CloudinaryService {
     // Upload và trả về secure URL (dùng cho frontend)
     public String uploadAndGetUrl(MultipartFile file) throws IOException {
         String publicId = "images" + System.currentTimeMillis();
-        Map<String, Object> params = Map.of(
-                "public_id", publicId,
-                "resource_type", "auto"
-        );
+        Map<String, Object> params = Map.of("public_id", publicId, "resource_type", "auto");
 
         Map result = cloudinary.uploader().upload(file.getBytes(), params);
         if (result.containsKey("error")) {
@@ -60,16 +59,16 @@ public class CloudinaryService {
         Uploader uploader = cloudinary.uploader();
 
         Map<String, Object> params = Map.of(
-                "transformation", Map.of(
-                        "width", width,
-                        "height", height,
-                        "crop", "fill",
-                        "quality", "auto",
-                        "fetch_format", "auto"  // Tối ưu format (WebP/AVIF)
-                ),
+                "transformation",
+                        Map.of(
+                                "width", width,
+                                "height", height,
+                                "crop", "fill",
+                                "quality", "auto",
+                                "fetch_format", "auto" // Tối ưu format (WebP/AVIF)
+                                ),
                 "use_filename", true,
-                "overwrite", true
-        );
+                "overwrite", true);
 
         Map result = uploader.upload(file.getBytes(), params);
         return (String) result.get("secure_url");

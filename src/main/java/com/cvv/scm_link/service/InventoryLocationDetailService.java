@@ -69,18 +69,18 @@ public class InventoryLocationDetailService
     }
 
     @Transactional(rollbackFor = AppException.class)
-    public InventoryLocationDetailResponse create (
+    public InventoryLocationDetailResponse create(
             InventoryLocationDetailRequest dto, String warehouseId, String productId) {
         InventoryLocationDetail inventoryLocationDetail = inventoryLocationDetailMapper.toEntity(dto);
-            WarehouseLocation location = warehouseLocationRepository
-                    .findByIdAndWarehouse_Id(dto.getWarehouseLocationId(), warehouseId)
-                    .orElseThrow(() -> new AppException(ErrorCode.WAREHOUSE_LOCATION_NOT_IN_WAREHOUSE));
-            inventoryLocationDetail.setWarehouseLocation(location);
-            inventoryLocationDetail.setSellPrice((long) (dto.getCostPrice() + (dto.getCostPrice() * 0.4)));
-            inventoryLocationDetail.setInventoryLevel(inventoryLevelRepository
-                    .findByWarehouse_IdAndProduct_Id(warehouseId, productId)
-                    .orElseThrow(() -> new AppException(ErrorCode.INVENTORY_LEVEL_NOT_FOUND)));
-            inventoryLocationDetail.setBatchNumber(generateBatchNumber());
+        WarehouseLocation location = warehouseLocationRepository
+                .findByIdAndWarehouse_Id(dto.getWarehouseLocationId(), warehouseId)
+                .orElseThrow(() -> new AppException(ErrorCode.WAREHOUSE_LOCATION_NOT_IN_WAREHOUSE));
+        inventoryLocationDetail.setWarehouseLocation(location);
+        inventoryLocationDetail.setSellPrice((long) (dto.getCostPrice() + (dto.getCostPrice() * 0.4)));
+        inventoryLocationDetail.setInventoryLevel(inventoryLevelRepository
+                .findByWarehouse_IdAndProduct_Id(warehouseId, productId)
+                .orElseThrow(() -> new AppException(ErrorCode.INVENTORY_LEVEL_NOT_FOUND)));
+        inventoryLocationDetail.setBatchNumber(generateBatchNumber());
 
         inventoryLocationDetail = inventoryLocationDetailRepository.save(inventoryLocationDetail);
         ProductResponse productResponse = productMapper.toProductResponse(

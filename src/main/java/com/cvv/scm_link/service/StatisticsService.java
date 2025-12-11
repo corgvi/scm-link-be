@@ -1,17 +1,19 @@
 package com.cvv.scm_link.service;
 
-import com.cvv.scm_link.exception.AppException;
-import com.cvv.scm_link.exception.ErrorCode;
-import com.cvv.scm_link.repository.OrderRepository;
-import com.cvv.scm_link.repository.StatisticsResponse;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.stereotype.Service;
+
+import com.cvv.scm_link.exception.AppException;
+import com.cvv.scm_link.exception.ErrorCode;
+import com.cvv.scm_link.repository.OrderRepository;
+import com.cvv.scm_link.repository.StatisticsResponse;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -22,7 +24,6 @@ public class StatisticsService {
     public StatisticsResponse getStatistics(String mode) {
 
         switch (mode.toLowerCase()) {
-
             case "monthly":
                 return getMonthlyStatistics();
 
@@ -36,7 +37,6 @@ public class StatisticsService {
                 throw new AppException(ErrorCode.ENTITY_NOT_FOUND);
         }
     }
-
 
     // ============================
     //  MONTHLY STATISTICS (12 tháng)
@@ -57,8 +57,8 @@ public class StatisticsService {
             revenueMap.put(month, revenue);
         });
 
-        List<String> labels = List.of("Jan","Feb","Mar","Apr","May","Jun",
-                "Jul","Aug","Sep","Oct","Nov","Dec");
+        List<String> labels =
+                List.of("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
 
         List<Long> sales = new ArrayList<>();
         List<Double> revenue = new ArrayList<>();
@@ -70,7 +70,6 @@ public class StatisticsService {
 
         return new StatisticsResponse(labels, sales, revenue);
     }
-
 
     // =============================
     // QUARTERLY STATISTICS (4 quý)
@@ -104,7 +103,6 @@ public class StatisticsService {
         return new StatisticsResponse(labels, sales, revenue);
     }
 
-
     // ============================
     //  ANNUAL STATISTICS (theo năm)
     // ============================
@@ -128,4 +126,3 @@ public class StatisticsService {
         return new StatisticsResponse(labels, sales, revenue);
     }
 }
-

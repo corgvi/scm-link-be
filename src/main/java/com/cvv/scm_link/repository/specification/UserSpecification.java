@@ -61,8 +61,8 @@ public class UserSpecification extends BaseSpecification<User, UserFilter> {
 
         // address
         if (StringUtils.hasText(filter.getCity())) {
-            predicates.add(cb.like(
-                    cb.lower(root.get("city")), "%" + filter.getCity().toLowerCase() + "%"));
+            predicates.add(
+                    cb.like(cb.lower(root.get("city")), "%" + filter.getCity().toLowerCase() + "%"));
         }
 
         // isActive

@@ -6,7 +6,6 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
-import com.cvv.scm_link.dto.response.stats.RecentOrderResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +23,7 @@ import com.cvv.scm_link.dto.response.OrderDetailResponse;
 import com.cvv.scm_link.dto.response.OrderItemBatchAllocationResponse;
 import com.cvv.scm_link.dto.response.OrderItemDetailResponse;
 import com.cvv.scm_link.dto.response.OrderResponse;
+import com.cvv.scm_link.dto.response.stats.RecentOrderResponse;
 import com.cvv.scm_link.entity.*;
 import com.cvv.scm_link.exception.AppException;
 import com.cvv.scm_link.exception.ErrorCode;
@@ -150,7 +150,8 @@ public class OrderService
             throw new AppException(ErrorCode.ORDER_COMPLETED);
         if (dto.getOrderStatus() != null && order.getOrderStatus().equalsIgnoreCase(StatusOrder.ORDER_CANCELLED))
             throw new AppException(ErrorCode.ORDER_CANCELLED);
-        if (dto.getOrderStatus() != null && dto.getOrderStatus().equalsIgnoreCase(StatusOrder.ORDER_PROCESSING)
+        if (dto.getOrderStatus() != null
+                && dto.getOrderStatus().equalsIgnoreCase(StatusOrder.ORDER_PROCESSING)
                 && (dto.getPaymentStatus().equalsIgnoreCase(StatusPayment.PAYMENT_PAID)
                         || dto.getPaymentStatus().equalsIgnoreCase(StatusPayment.PAYMENT_REFUND))) {
             throw new AppException(ErrorCode.PAYMENT_STATUS_INVALID);
@@ -187,11 +188,13 @@ public class OrderService
         if (dto.getPaymentStatus() != null) {
             order.setPaymentStatus(dto.getPaymentStatus());
         }
-        if( dto.getOrderStatus() != null) {
+        if (dto.getOrderStatus() != null) {
             order.setOrderStatus(dto.getOrderStatus());
         }
 
-        if (dto.getOrderStatus() != null && dto.getPaymentStatus() != null && dto.getOrderStatus().equalsIgnoreCase(StatusOrder.ORDER_DELIVERED)
+        if (dto.getOrderStatus() != null
+                && dto.getPaymentStatus() != null
+                && dto.getOrderStatus().equalsIgnoreCase(StatusOrder.ORDER_DELIVERED)
                 && dto.getPaymentStatus().equalsIgnoreCase(StatusPayment.PAYMENT_PAID)) {
             order.setPaymentStatus(StatusPayment.PAYMENT_PAID);
             order.setOrderStatus(StatusOrder.ORDER_COMPLETED);
@@ -210,7 +213,8 @@ public class OrderService
             boolean itemsChanged = !updatedItems.isEmpty();
 
             if (addressChanged || itemsChanged) {
-                long newTotal = calculateTotalAmount(dto.getShippingAddress(), dto.getShippingCity(), updatedItems, order);
+                long newTotal =
+                        calculateTotalAmount(dto.getShippingAddress(), dto.getShippingCity(), updatedItems, order);
                 order.setTotalAmount(newTotal);
             }
         }
@@ -319,8 +323,6 @@ public class OrderService
     public List<RecentOrderResponse> getRecentOrders() {
         Pageable pageable = PageRequest.of(0, 5); // lấy top 5
         List<Order> orders = orderRepository.findRecentOrders(pageable);
-        return orders.stream()
-                .map(orderMapper::toRecentOrderDTO)
-                .toList();
+        return orders.stream().map(orderMapper::toRecentOrderDTO).toList();
     }
 }

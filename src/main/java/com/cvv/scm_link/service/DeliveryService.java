@@ -124,9 +124,10 @@ public class DeliveryService
                 || delivery.getDeliveryStatus().equals(StatusDelivery.DELIVERY_CANCELLED)) {
             throw new AppException(ErrorCode.DELIVERY_ALREADY_FINALIZED);
         }
-//        if (dto.getDeliveryOrders() != null && delivery.getDeliveryStatus().equals(StatusDelivery.DELIVERING)) {
-//            throw new AppException(ErrorCode.CANNOT_UPDATE_ORDERS_WHILE_DELIVERING);
-//        }
+        //        if (dto.getDeliveryOrders() != null && delivery.getDeliveryStatus().equals(StatusDelivery.DELIVERING))
+        // {
+        //            throw new AppException(ErrorCode.CANNOT_UPDATE_ORDERS_WHILE_DELIVERING);
+        //        }
         if (dto.getNote() != null && !dto.getNote().isEmpty()) {
             delivery.setNote(dto.getNote());
         }
@@ -136,7 +137,8 @@ public class DeliveryService
                     .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
             delivery.setAssignedDriver(user);
         }
-        if (dto.getVehicleLicensePlate() != null && !dto.getVehicleLicensePlate().isEmpty()) {
+        if (dto.getVehicleLicensePlate() != null
+                && !dto.getVehicleLicensePlate().isEmpty()) {
             Vehicle vehicle = vehicleService.findByLicensePlate(dto.getVehicleLicensePlate());
             delivery.setAssignedVehicle(vehicle);
         }
@@ -309,7 +311,8 @@ public class DeliveryService
     }
 
     private void updateStatusVehicle(Delivery delivery, Boolean available) {
-        Vehicle vehicle = vehicleService.findByLicensePlate(delivery.getAssignedVehicle().getLicensePlate());
+        Vehicle vehicle =
+                vehicleService.findByLicensePlate(delivery.getAssignedVehicle().getLicensePlate());
         vehicle.setAvailable(available);
         vehicleRepository.save(vehicle);
     }

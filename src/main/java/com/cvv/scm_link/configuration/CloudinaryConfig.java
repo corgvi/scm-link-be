@@ -1,13 +1,15 @@
 package com.cvv.scm_link.configuration;
 
-import com.cloudinary.Cloudinary;
-import lombok.Data;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.cloudinary.Cloudinary;
+
+import lombok.Data;
 
 @Configuration
 @Data
@@ -28,8 +30,6 @@ public class CloudinaryConfig {
         cloudinaryConfig.put("timeout", 60000);
         cloudinaryConfig.put("max_requests", 50);
 
-
         return new Cloudinary(cloudinaryConfig);
     }
-
 }

@@ -1,13 +1,5 @@
 package com.cvv.scm_link.service;
 
-import com.cvv.scm_link.dto.response.stats.*;
-import com.cvv.scm_link.repository.DeliveryRepository;
-import com.cvv.scm_link.repository.OrderRepository;
-import com.cvv.scm_link.repository.UserRepository;
-import lombok.AccessLevel;
-import lombok.experimental.FieldDefaults;
-import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -17,6 +9,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.stereotype.Service;
+
+import com.cvv.scm_link.dto.response.stats.*;
+import com.cvv.scm_link.repository.DeliveryRepository;
+import com.cvv.scm_link.repository.OrderRepository;
+import com.cvv.scm_link.repository.UserRepository;
+
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
+
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class DashboardService {
@@ -24,7 +26,8 @@ public class DashboardService {
     OrderRepository orderRepository;
     DeliveryRepository deliveryRepository;
 
-    public DashboardService(UserRepository userRepository, OrderRepository orderRepository, DeliveryRepository deliveryRepository) {
+    public DashboardService(
+            UserRepository userRepository, OrderRepository orderRepository, DeliveryRepository deliveryRepository) {
         this.userRepository = userRepository;
         this.orderRepository = orderRepository;
         this.deliveryRepository = deliveryRepository;
@@ -111,9 +114,7 @@ public class DashboardService {
         double monthlyTarget = 2000000000;
 
         // 5. Progress %
-        double progress = monthlyTarget > 0
-                ? (revenueThisMonth / monthlyTarget) * 100
-                : 0;
+        double progress = monthlyTarget > 0 ? (revenueThisMonth / monthlyTarget) * 100 : 0;
 
         // 6. Growth %
         double growth = revenueLastMonth > 0
@@ -142,6 +143,7 @@ public class DashboardService {
                 .growthRate(growth)
                 .build();
     }
+
     private OrderStats buildOrderStats() {
         long total = orderRepository.countAll();
         long thisMonth = orderRepository.countOrdersThisMonth();
@@ -159,6 +161,7 @@ public class DashboardService {
                 .averageOrderValue(aov)
                 .build();
     }
+
     private RevenueStats buildRevenueStats() {
         long totalRevenue = orderRepository.totalRevenue();
         long thisMonth = orderRepository.totalRevenueThisMonth();
@@ -172,6 +175,7 @@ public class DashboardService {
                 .growthRate(growth)
                 .build();
     }
+
     private DeliveryStats buildDeliveryStats() {
         long delivering = deliveryRepository.countByDeliveryStatus("DELIVERING");
         long completed = deliveryRepository.countByDeliveryStatus("DELIVERY_COMPLETED");
@@ -184,9 +188,9 @@ public class DashboardService {
                 .onTimeDeliveryRate(onTimeRate)
                 .build();
     }
+
     private double calcGrowth(long current, long previous) {
         if (previous == 0) return current > 0 ? 100 : 0;
         return ((double) (current - previous) / previous) * 100;
     }
-
 }

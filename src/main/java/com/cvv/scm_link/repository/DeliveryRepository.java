@@ -26,12 +26,13 @@ public interface DeliveryRepository extends BaseRepository<Delivery, String> {
 
     long countByDeliveryStatus(String status);
 
-    @Query("""
-        SELECT (COUNT(d) * 1.0 / 
-               (SELECT COUNT(d2) FROM Delivery d2 WHERE d2.deliveryStatus = 'DELIVERY_COMPLETED')) * 100
-        FROM Delivery d 
-        WHERE d.deliveryStatus = 'DELIVERY_COMPLETED'
-          AND d.actualDeliveryTime <= d.scheduledDeliveryTime
-    """)
+    @Query(
+            """
+		SELECT (COUNT(d) * 1.0 /
+			(SELECT COUNT(d2) FROM Delivery d2 WHERE d2.deliveryStatus = 'DELIVERY_COMPLETED')) * 100
+		FROM Delivery d
+		WHERE d.deliveryStatus = 'DELIVERY_COMPLETED'
+		AND d.actualDeliveryTime <= d.scheduledDeliveryTime
+	""")
     double calculateOnTimeRate();
 }

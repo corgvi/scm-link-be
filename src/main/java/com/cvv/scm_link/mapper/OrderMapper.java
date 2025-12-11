@@ -1,16 +1,16 @@
 package com.cvv.scm_link.mapper;
 
-import com.cvv.scm_link.dto.response.stats.RecentOrderResponse;
-import com.cvv.scm_link.entity.OrderItems;
+import java.math.BigDecimal;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import com.cvv.scm_link.dto.request.OrderCreateRequest;
 import com.cvv.scm_link.dto.request.OrderUpdateRequest;
 import com.cvv.scm_link.dto.response.OrderResponse;
+import com.cvv.scm_link.dto.response.stats.RecentOrderResponse;
 import com.cvv.scm_link.entity.Order;
-
-import java.math.BigDecimal;
+import com.cvv.scm_link.entity.OrderItems;
 
 @Mapper(componentModel = "spring")
 public interface OrderMapper extends BaseMapper<Order, OrderCreateRequest, OrderUpdateRequest, OrderResponse> {
@@ -20,13 +20,13 @@ public interface OrderMapper extends BaseMapper<Order, OrderCreateRequest, Order
 
     default RecentOrderResponse toRecentOrderDTO(Order order) {
 
-        OrderItems firstItem = order.getOrderItems().isEmpty()
-                ? null
-                : order.getOrderItems().get(0);
+        OrderItems firstItem =
+                order.getOrderItems().isEmpty() ? null : order.getOrderItems().get(0);
 
         String productName = firstItem != null ? firstItem.getProduct().getName() : null;
         String productImage = firstItem != null ? firstItem.getProduct().getImageUrl() : null;
-        String category = firstItem != null ? firstItem.getProduct().getCategory().getName() : null;
+        String category =
+                firstItem != null ? firstItem.getProduct().getCategory().getName() : null;
 
         return RecentOrderResponse.builder()
                 .id(order.getId())

@@ -1,15 +1,17 @@
 package com.cvv.scm_link.controller;
 
-import com.cvv.scm_link.dto.response.APIResponse;
-import com.cvv.scm_link.service.CloudinaryService;
-import lombok.AccessLevel;
-import lombok.experimental.FieldDefaults;
+import java.io.IOException;
+import java.util.Map;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.util.Map;
+import com.cvv.scm_link.dto.response.APIResponse;
+import com.cvv.scm_link.service.CloudinaryService;
+
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 
 @RestController
 @RequestMapping("/uploads")
@@ -25,8 +27,8 @@ public class CloudinaryController {
     // Upload đơn lẻ
     @PostMapping("/upload")
     public APIResponse<String> uploadSingle(@RequestParam("file") MultipartFile file) throws IOException {
-            String url = cloudinaryService.uploadAndGetUrl(file);
-            return APIResponse.<String>builder().result(url).build();
+        String url = cloudinaryService.uploadAndGetUrl(file);
+        return APIResponse.<String>builder().result(url).build();
     }
 
     // Upload với transform (ví dụ: resize 800x600)
@@ -48,5 +50,4 @@ public class CloudinaryController {
         Map result = cloudinaryService.delete(publicId);
         return APIResponse.<Map>builder().result(result).build();
     }
-
 }

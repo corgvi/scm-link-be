@@ -1,15 +1,17 @@
 package com.cvv.scm_link.controller;
 
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.cvv.scm_link.dto.response.APIResponse;
 import com.cvv.scm_link.dto.response.stats.DashboardResponse;
 import com.cvv.scm_link.dto.response.stats.MonthlySalesDTO;
 import com.cvv.scm_link.dto.response.stats.MonthlyTargetDTO;
 import com.cvv.scm_link.service.DashboardService;
+
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/dashboard")

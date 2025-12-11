@@ -21,8 +21,7 @@ public class TransactionSpecification extends BaseSpecification<InventoryTransac
             return null;
         }
         String key = "%" + filter.getKeyword().toLowerCase() + "%";
-        return cb.or(like(cb, root.get("transactionType"), key),
-                like(cb, root.get("sku"), key));
+        return cb.or(like(cb, root.get("transactionType"), key), like(cb, root.get("sku"), key));
     }
 
     @Override
