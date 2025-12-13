@@ -1,10 +1,7 @@
 package com.cvv.scm_link.service;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
@@ -204,6 +201,7 @@ public class DeliveryService
     }
 
     private void addOrdersToDelivery(List<DeliveryOrdersRequest> orderRequests, Delivery delivery) {
+        List<DeliveryOrders> deliveryOrdersList = new ArrayList<>();
         for (DeliveryOrdersRequest request : orderRequests) {
             Order order = orderRepository
                     .findById(request.getOrderId())
@@ -215,16 +213,13 @@ public class DeliveryService
             deliveryOrder.setDelivery(delivery);
             deliveryOrder.setItemStatus(StatusDelivery.PENDING);
 
-            deliveryOrdersRepository.save(deliveryOrder);
+            deliveryOrdersList.add(deliveryOrder);
         }
+        deliveryOrdersRepository.saveAll(deliveryOrdersList);
+
     }
 
     private void handleStatusChange(String newStatus, Delivery delivery) {
-        for (DeliveryOrders d : delivery.getDeliveryOrders()) {
-            if (d.getOrder() == null) {
-                log.error("⚠️ DeliveryOrders {} has NULL ORDER!", d.getId());
-            }
-        }
         switch (newStatus) {
             case StatusDelivery.DELIVERING -> {
                 delivery.setActualPickupTime(LocalDateTime.now());
