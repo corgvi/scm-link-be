@@ -216,7 +216,6 @@ public class DeliveryService
             deliveryOrdersList.add(deliveryOrder);
         }
         deliveryOrdersRepository.saveAll(deliveryOrdersList);
-
     }
 
     private void handleStatusChange(String newStatus, Delivery delivery) {
