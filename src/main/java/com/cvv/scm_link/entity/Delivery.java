@@ -32,7 +32,6 @@ public class Delivery extends BaseEntity {
     @Column(nullable = false)
     LocalDateTime scheduledDeliveryTime;
 
-    @Column(nullable = false)
     LocalDateTime actualDeliveryTime;
 
     @Column(nullable = false)
