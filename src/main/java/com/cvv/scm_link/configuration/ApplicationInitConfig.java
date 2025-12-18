@@ -44,6 +44,12 @@ public class ApplicationInitConfig {
                 Role adminRole = roleRepository.save(Role.builder()
                         .name(com.cvv.scm_link.enums.Role.ADMIN.name())
                         .build());
+                roleRepository.save(Role.builder()
+                        .name(com.cvv.scm_link.enums.Role.SHIPPER.name())
+                        .build());
+                roleRepository.save(Role.builder()
+                        .name(com.cvv.scm_link.enums.Role.WAREHOUSE_STAFF.name())
+                        .build());
                 User user = User.builder()
                         .username(ADMIN_USERNAME)
                         .password(passwordEncoder.encode(ADMIN_PASSWORD))
