@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.cvv.scm_link.dto.filter.WarehouseFilter;
 import com.cvv.scm_link.dto.request.WarehouseRequest;
+import com.cvv.scm_link.dto.request.WarehouseUpdateRequest;
 import com.cvv.scm_link.dto.response.WarehouseResponse;
 import com.cvv.scm_link.entity.Warehouse;
 import com.cvv.scm_link.exception.AppException;
@@ -26,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class WarehouseService
-        extends BaseServiceImpl<WarehouseRequest, WarehouseRequest, WarehouseResponse, Warehouse, String> {
+        extends BaseServiceImpl<WarehouseRequest, WarehouseUpdateRequest, WarehouseResponse, Warehouse, String> {
 
     WarehouseMapper warehouseMapper;
     WarehouseRepository warehouseRepository;
@@ -34,7 +35,7 @@ public class WarehouseService
 
     public WarehouseService(
             BaseRepository<Warehouse, String> baseRepository,
-            BaseMapper<Warehouse, WarehouseRequest, WarehouseRequest, WarehouseResponse> baseMapper,
+            BaseMapper<Warehouse, WarehouseRequest, WarehouseUpdateRequest, WarehouseResponse> baseMapper,
             WarehouseMapper warehouseMapper,
             WarehouseRepository warehouseRepository,
             MapboxService mapboxService) {
@@ -66,7 +67,7 @@ public class WarehouseService
     }
 
     @Override
-    public WarehouseResponse update(WarehouseRequest dto, String s) {
+    public WarehouseResponse update(WarehouseUpdateRequest dto, String s) {
         Warehouse warehouse =
                 warehouseRepository.findById(s).orElseThrow(() -> new AppException(ErrorCode.WAREHOUSE_NOT_FOUND));
 
@@ -78,6 +79,8 @@ public class WarehouseService
             if (Objects.isNull(coordinates)) throw new RuntimeException("Convert to coordinates failed");
             warehouse.setLatitude(coordinates[0]);
             warehouse.setLongitude(coordinates[1]);
+            warehouse.setAddress(dto.getAddress());
+            warehouse.setCity(dto.getCity());
         }
 
         if (dto.getName() != null) {
@@ -85,6 +88,9 @@ public class WarehouseService
         }
         if (dto.getContactPhone() != null) {
             warehouse.setContactPhone(dto.getContactPhone());
+        }
+        if (dto.getActive() != null) {
+            warehouse.setActive(dto.getActive());
         }
 
         warehouse = warehouseRepository.save(warehouse);

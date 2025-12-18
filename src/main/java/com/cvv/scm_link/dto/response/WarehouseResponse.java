@@ -16,6 +16,7 @@ import lombok.experimental.SuperBuilder;
 public class WarehouseResponse extends BaseDTO {
     String name;
     String address;
+    String city;
     String contactPhone;
     String latitude;
     String longitude;

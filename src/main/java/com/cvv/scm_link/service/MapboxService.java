@@ -1,6 +1,5 @@
 package com.cvv.scm_link.service;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -9,7 +8,6 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.util.UriUtils;
 
 import com.cvv.scm_link.configuration.BBoxConfig;
 import com.cvv.scm_link.dto.response.MapboxDirectionResponse;
@@ -42,6 +40,7 @@ public class MapboxService {
     }
 
     public Mono<Double> getDistanceKm(double originLat, double originLon, double destLat, double destLon) {
+        // ... (Giữ nguyên logic cũ)
         String url = String.format(
                 "/directions/v5/mapbox/driving/%f,%f;%f,%f?access_token=%s",
                 originLon, originLat, destLon, destLat, mapboxApiKey);
@@ -57,7 +56,7 @@ public class MapboxService {
                     }
                     double distanceMeters = response.getRoutes().get(0).getDistance();
                     log.info("Distance calculated: {} km", distanceMeters / 1000);
-                    return distanceMeters / 1000; // Convert m -> km
+                    return distanceMeters / 1000;
                 })
                 .defaultIfEmpty(0.0);
     }
@@ -65,38 +64,51 @@ public class MapboxService {
     public Mono<double[]> getCoordinatesFromAddress(String address, String cityCode) {
         List<Double> bbox = bBoxConfig.getBbox(cityCode);
         String bboxParam = String.format("%f,%f,%f,%f", bbox.get(0), bbox.get(1), bbox.get(2), bbox.get(3));
-
-        String url = String.format(
-                "/geocoding/v5/mapbox.places/%s.json?access_token=%s&limit=1&country=VN&types=address,place&bbox=%s",
-                UriUtils.encodePath(address, StandardCharsets.UTF_8), mapboxApiKey, bboxParam);
+        String urlTemplate =
+                "/geocoding/v5/mapbox.places/{address}.json?access_token={accessToken}&limit=5&country=VN&language=vi&types=address,poi,place,locality&bbox={bbox}";
 
         return mapboxWebClient
                 .get()
-                .uri(url)
+                .uri(urlTemplate, address, mapboxApiKey, bboxParam)
                 .retrieve()
                 .bodyToMono(JsonNode.class)
                 .map(json -> {
                     JsonNode features = json.get("features");
                     if (features == null || features.isEmpty()) {
+                        log.warn("Address not found via Mapbox: {}", address);
                         throw new AppException(ErrorCode.ADDRESS_NOT_FOUND);
                     }
-                    JsonNode center = features.get(0).get("center");
+
+                    JsonNode bestMatch = features.get(0);
+                    for (JsonNode feature : features) {
+                        String type = feature.get("place_type").get(0).asText();
+                        if ("address".equals(type) || "poi".equals(type)) {
+                            bestMatch = feature;
+                            break;
+                        }
+                    }
+
+                    JsonNode center = bestMatch.get("center");
                     double lon = center.get(0).asDouble();
                     double lat = center.get(1).asDouble();
-                    log.info("Resolved address: {} => {}, {} + features: {}", address, lat, lon, features);
+                    String foundName = bestMatch.has("place_name")
+                            ? bestMatch.get("place_name").asText()
+                            : "N/A";
+
+                    log.info("Resolved input '{}' => Found: '{}' ({}, {})", address, foundName, lat, lon);
                     return new double[] {lat, lon};
                 })
                 .defaultIfEmpty(new double[] {0.0, 0.0});
     }
 
     public Mono<MapboxMultiStopRouteInfo> getOptimizedRoute(List<double[]> coordinates) {
+        // ... (Giữ nguyên logic cũ, chỉ clean code nhẹ)
         if (coordinates == null || coordinates.size() < 2) {
             throw new AppException(ErrorCode.ROUTE_NOT_FOUND);
         }
 
-        // Chuyển list tọa độ thành chuỗi param
         String coordString = coordinates.stream()
-                .map(coord -> String.format("%f,%f", coord[1], coord[0])) // lon,lat
+                .map(coord -> String.format("%f,%f", coord[1], coord[0]))
                 .collect(Collectors.joining(";"));
 
         String url = String.format(
@@ -123,13 +135,14 @@ public class MapboxService {
                         bestTrip.get("waypoint_order").forEach(node -> order.add(node.asInt()));
                     }
 
-                    log.info("Optimized route: {} km, {} min, order: {}", distanceKm, durationMin, order);
+                    log.info("Optimized route: {} km, {} min", distanceKm, durationMin);
                     return new MapboxMultiStopRouteInfo(distanceKm, durationMin, order);
                 })
                 .defaultIfEmpty(new MapboxMultiStopRouteInfo(0.0, 0.0, Collections.emptyList()));
     }
 
     public Mono<String> getAddressFromCoordinates(double lat, double lon) {
+        // Thêm language=vi để trả về địa chỉ tiếng Việt
         String url = String.format(
                 "/geocoding/v5/mapbox.places/%f,%f.json?access_token=%s&limit=1&language=vi", lon, lat, mapboxApiKey);
 

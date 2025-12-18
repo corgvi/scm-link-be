@@ -235,12 +235,14 @@ public class OrderService
 
         if (Objects.isNull(coordinates)) throw new AppException(ErrorCode.ADDRESS_NOT_FOUND);
 
-        order.setShippingAddress(shippingAddress + ", " + shippingCity);
+        order.setShippingAddress(shippingAddress);
+        order.setShippingCity(shippingCity);
         order.setShippingLatitude(coordinates[0]);
         order.setShippingLongitude(coordinates[1]);
 
         AtomicLong shippingFees = new AtomicLong(0);
         AtomicLong subTotal = new AtomicLong(0);
+        AtomicLong weightKg = new AtomicLong();
 
         log.info("items: " + orderItemsList);
 
@@ -261,13 +263,14 @@ public class OrderService
 
         orderItemsList.forEach(item -> {
             Product product = item.getProduct();
-            long weightKg = ((long) product.getWeightG() * item.getQuantity()) / 1000;
-            long shippingFeeForItem =
-                    (long) (SHIPPING_BASE_FEE + (distanceKm * SHIPPING_PER_KM_FEE) + (weightKg * SHIPPING_PER_KG_FEE));
+            weightKg.addAndGet(((long) product.getWeightG() * item.getQuantity()) / 1000);
 
-            shippingFees.addAndGet(shippingFeeForItem);
             subTotal.addAndGet(item.getPriceAtOrder() * item.getQuantity());
         });
+        long shippingFeeForItem = (long)
+                (SHIPPING_BASE_FEE + (distanceKm * SHIPPING_PER_KM_FEE) + (weightKg.get() * SHIPPING_PER_KG_FEE));
+
+        shippingFees.set(shippingFeeForItem);
 
         return shippingFees.get() + subTotal.get();
     }

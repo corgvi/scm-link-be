@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cvv.scm_link.dto.PageResponse;
 import com.cvv.scm_link.dto.filter.WarehouseFilter;
 import com.cvv.scm_link.dto.request.WarehouseRequest;
+import com.cvv.scm_link.dto.request.WarehouseUpdateRequest;
 import com.cvv.scm_link.dto.response.APIResponse;
 import com.cvv.scm_link.dto.response.WarehouseResponse;
 import com.cvv.scm_link.service.BaseService;
@@ -22,12 +23,13 @@ import lombok.experimental.FieldDefaults;
 @RestController
 @RequestMapping("/warehouses")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class WarehouseController extends BaseController<WarehouseRequest, WarehouseRequest, WarehouseResponse, String> {
+public class WarehouseController
+        extends BaseController<WarehouseRequest, WarehouseUpdateRequest, WarehouseResponse, String> {
 
     WarehouseService warehouseService;
 
     public WarehouseController(
-            BaseService<WarehouseRequest, WarehouseRequest, WarehouseResponse, String> baseService,
+            BaseService<WarehouseRequest, WarehouseUpdateRequest, WarehouseResponse, String> baseService,
             WarehouseService warehouseService) {
         super(baseService);
         this.warehouseService = warehouseService;
