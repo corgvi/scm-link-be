@@ -4,8 +4,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 import jakarta.persistence.*;
-
 import jakarta.validation.constraints.FutureOrPresent;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
@@ -25,6 +25,7 @@ public class InventoryLocationDetail extends BaseEntity {
 
     @FutureOrPresent(message = "EXPIRY_DATE_MUST_BE_PRESENT_OR_FUTURE")
     LocalDate expiryDate;
+
     Long costPrice;
     Long sellPrice;
 

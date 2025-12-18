@@ -4,8 +4,8 @@ import java.util.Map;
 import java.util.Objects;
 
 import jakarta.validation.ConstraintViolation;
-
 import jakarta.validation.ConstraintViolationException;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.TransactionSystemException;
@@ -128,9 +128,10 @@ public class GlobalExceptionHandler {
 
         APIResponse apiResponse = APIResponse.builder()
                 .code(errorCode.getCode())
-                .message(Objects.nonNull(attributes)
-                        ? mapAttributes(errorCode.getMessage(), attributes)
-                        : errorCode.getMessage())
+                .message(
+                        Objects.nonNull(attributes)
+                                ? mapAttributes(errorCode.getMessage(), attributes)
+                                : errorCode.getMessage())
                 .build();
 
         return ResponseEntity.status(errorCode.getHttpStatusCode()).body(apiResponse);
