@@ -23,13 +23,10 @@ public class Delivery extends BaseEntity {
     @Column(nullable = false)
     String deliveryStatus;
 
-    @Column(nullable = false)
     LocalDateTime scheduledPickupTime;
 
-    @Column(nullable = false)
     LocalDateTime actualPickupTime;
 
-    @Column(nullable = false)
     LocalDateTime scheduledDeliveryTime;
 
     LocalDateTime actualDeliveryTime;

@@ -2,6 +2,7 @@ package com.cvv.scm_link.dto.request;
 
 import java.time.LocalDate;
 
+import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 

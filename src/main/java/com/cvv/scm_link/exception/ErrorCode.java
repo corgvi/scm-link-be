@@ -74,7 +74,8 @@ public enum ErrorCode {
     ROUTE_CALCULATION_FAILED(1058, HttpStatus.BAD_REQUEST, "Route calculation failed"),
     INVALID_REQUEST(1059, HttpStatus.BAD_REQUEST, "DeliveryOrders list cannot be null or empty"),
     DUPLICATE_ORDER_IN_DELIVERY(1060, HttpStatus.BAD_REQUEST, "Duplicate order"),
-    INVALID_DELIVERY_STATUS(1061, HttpStatus.BAD_REQUEST, "Invalid delivery status");
+    INVALID_DELIVERY_STATUS(1061, HttpStatus.BAD_REQUEST, "Invalid delivery status"),
+    EXPIRY_DATE_MUST_BE_PRESENT_OR_FUTURE(1062, HttpStatus.BAD_REQUEST, "Expiry date must be present or future");
 
     int code;
     HttpStatusCode httpStatusCode;
