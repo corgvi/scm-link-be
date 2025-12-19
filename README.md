@@ -25,8 +25,8 @@ This service is responsible for:
 
 ## Project Structure
 src/
-├── main/
-│   ├── java/com/cvv/scm_link/
+├── main/ 
+│   ├── java/com/cvv/scm_link/ 
 │   │   ├── configuration/      
 │   │   ├── constant/           
 │   │   ├── controller/        
@@ -38,11 +38,11 @@ src/
 │   │   ├── repository/
 │   │   ├── service/            
 │   │   ├── validator/          
-│   │   └── ScmLinkApplication.java
-│   └── resources/
-│       ├── application.properties
+│   │   └── ScmLinkApplication.java 
+│   └── resources/ 
+│       ├── application.properties 
 │       └── application-prod.properties
-└── test/
+└── test/ 
 └── java/...                
 
 ## Production configuration
