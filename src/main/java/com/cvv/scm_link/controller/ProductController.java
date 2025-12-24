@@ -1,6 +1,7 @@
 package com.cvv.scm_link.controller;
 
-import com.cvv.scm_link.dto.response.ProductUserResponse;
+import java.util.List;
+
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -16,14 +17,13 @@ import com.cvv.scm_link.dto.request.ProductCreateRequest;
 import com.cvv.scm_link.dto.request.ProductUpdateRequest;
 import com.cvv.scm_link.dto.response.APIResponse;
 import com.cvv.scm_link.dto.response.ProductDetailsResponse;
+import com.cvv.scm_link.dto.response.ProductUserResponse;
 import com.cvv.scm_link.service.BaseService;
 import com.cvv.scm_link.service.ProductService;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.List;
 
 @Slf4j
 @RestController
@@ -63,7 +63,7 @@ public class ProductController
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/all")
-    public APIResponse<List<ProductUserResponse>> getAllProductsWithPrice(){
+    public APIResponse<List<ProductUserResponse>> getAllProductsWithPrice() {
         return APIResponse.<List<ProductUserResponse>>builder()
                 .result(productService.getProductsWithStockAndPrice())
                 .build();

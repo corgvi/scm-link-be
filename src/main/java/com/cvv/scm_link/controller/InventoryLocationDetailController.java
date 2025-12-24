@@ -14,7 +14,6 @@ import com.cvv.scm_link.dto.request.InventoryLocationDetailRequest;
 import com.cvv.scm_link.dto.response.APIResponse;
 import com.cvv.scm_link.dto.response.BatchDetailDTO;
 import com.cvv.scm_link.dto.response.InventoryLocationDetailResponse;
-import com.cvv.scm_link.dto.response.ProductUserResponse;
 import com.cvv.scm_link.service.BaseService;
 import com.cvv.scm_link.service.InventoryLocationDetailService;
 
@@ -72,10 +71,10 @@ public class InventoryLocationDetailController
     }
 
     @GetMapping("/batchDetails/{productId}/{warehouseId}")
-    public APIResponse<List<BatchDetailDTO>> getBatchDetailsByProductAndWarehouse(@PathVariable("productId") String productId, @PathVariable("warehouseId") String warehouseId) {
+    public APIResponse<List<BatchDetailDTO>> getBatchDetailsByProductAndWarehouse(
+            @PathVariable("productId") String productId, @PathVariable("warehouseId") String warehouseId) {
         return APIResponse.<List<BatchDetailDTO>>builder()
                 .result(inventoryLocationDetailService.getBatchDetails(productId, warehouseId))
                 .build();
     }
-
 }

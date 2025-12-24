@@ -2,9 +2,6 @@ package com.cvv.scm_link.service;
 
 import java.util.*;
 
-import com.cvv.scm_link.dto.response.InventoryBatchDTO;
-import com.cvv.scm_link.dto.response.ProductBatchFlatDTO;
-import com.cvv.scm_link.dto.response.ProductUserResponse;
 import jakarta.persistence.LockModeType;
 
 import org.springframework.data.domain.Page;
@@ -16,7 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cvv.scm_link.dto.filter.ProductFilter;
 import com.cvv.scm_link.dto.request.ProductCreateRequest;
 import com.cvv.scm_link.dto.request.ProductUpdateRequest;
+import com.cvv.scm_link.dto.response.InventoryBatchDTO;
+import com.cvv.scm_link.dto.response.ProductBatchFlatDTO;
 import com.cvv.scm_link.dto.response.ProductDetailsResponse;
+import com.cvv.scm_link.dto.response.ProductUserResponse;
 import com.cvv.scm_link.entity.Category;
 import com.cvv.scm_link.entity.Product;
 import com.cvv.scm_link.entity.Supplier;
@@ -145,23 +145,23 @@ public class ProductService
         List<ProductBatchFlatDTO> productBatchFlatDTOs = productRepository.getProductStockAndPrice();
         Map<String, ProductUserResponse> result = new LinkedHashMap<>();
         for (ProductBatchFlatDTO dto : productBatchFlatDTOs) {
-            ProductUserResponse productUserResponse = result.computeIfAbsent(dto.getId(), id ->
-                ProductUserResponse.builder()
-                        .id(dto.getId())
-                        .name(dto.getName())
-                        .code(dto.getCode())
-                        .imageUrl(dto.getImageUrl())
-                        .origin(dto.getOrigin())
-                        .sku(dto.getSku())
-                        .batches(new ArrayList<>())
-                        .weight(dto.getWeight())
-                        .description(dto.getDescription())
-                        .build()
-            );
+            ProductUserResponse productUserResponse =
+                    result.computeIfAbsent(dto.getId(), id -> ProductUserResponse.builder()
+                            .id(dto.getId())
+                            .name(dto.getName())
+                            .code(dto.getCode())
+                            .imageUrl(dto.getImageUrl())
+                            .origin(dto.getOrigin())
+                            .sku(dto.getSku())
+                            .batches(new ArrayList<>())
+                            .weight(dto.getWeight())
+                            .description(dto.getDescription())
+                            .build());
 
             if (dto.getSellPrice() > 0 && dto.getTotalAvailable() > 0) {
-                productUserResponse.getBatches().add(
-                        InventoryBatchDTO.builder()
+                productUserResponse
+                        .getBatches()
+                        .add(InventoryBatchDTO.builder()
                                 .totalAvailable(dto.getTotalAvailable())
                                 .sellPrice(dto.getSellPrice())
                                 .build());

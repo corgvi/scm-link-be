@@ -48,7 +48,6 @@ public interface InventoryLocationDetailRepository extends BaseRepository<Invent
 """)
     List<BatchDetailDTO> getBatchDetails(@Param("productId") String productId);
 
-
     @Query(
             """
 	SELECT new com.cvv.scm_link.dto.response.BatchDetailDTO(
@@ -65,9 +64,10 @@ public interface InventoryLocationDetailRepository extends BaseRepository<Invent
 	FROM InventoryLocationDetail ild
 	JOIN WarehouseLocation wl
 	ON ild.warehouseLocation.id = wl.id
-    JOIN Warehouse  w
-    ON wl.warehouse.id = w.id
+	JOIN Warehouse  w
+	ON wl.warehouse.id = w.id
 	WHERE ild.inventoryLevel.product.id = :productId AND ild.inventoryLevel.warehouse.id = :warehouseId
 """)
-    List<BatchDetailDTO> getBatchDetails(@Param("productId") String productId, @Param("warehouseId") String warehouseId);
+    List<BatchDetailDTO> getBatchDetails(
+            @Param("productId") String productId, @Param("warehouseId") String warehouseId);
 }

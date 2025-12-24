@@ -1,11 +1,11 @@
 package com.cvv.scm_link.dto.response;
 
+import java.util.List;
+
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
-
-import java.util.List;
 
 @Data
 @Builder

@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.FutureOrPresent;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
