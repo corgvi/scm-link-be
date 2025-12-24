@@ -229,11 +229,13 @@ public class DeliveryService
             case StatusDelivery.DELIVERY_COMPLETED -> {
                 delivery.setActualDeliveryTime(LocalDateTime.now());
                 delivery.setDeliveryStatus(StatusDelivery.DELIVERY_COMPLETED);
+                updateStatusVehicle(delivery, true);
                 createInventoryTransaction(
                         delivery, StatusDelivery.DELIVERY_COMPLETED, "Delivery completed: " + delivery.getCode());
             }
             case StatusDelivery.DELIVERY_CANCELLED -> {
                 delivery.setDeliveryStatus(StatusDelivery.DELIVERY_CANCELLED);
+                updateStatusVehicle(delivery, true);
                 createInventoryTransaction(
                         delivery, StatusDelivery.DELIVERY_CANCELLED, "Delivery cancelled: " + delivery.getCode());
             }

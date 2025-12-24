@@ -24,10 +24,8 @@ public class Product extends BaseEntity {
     String description;
     String imageUrl;
     Integer weightG;
-    String lengthCm;
-    String widthCm;
-    String heightCm;
-    String branchName;
+    String storageCondition;
+    String origin;
     String color;
     String size;
     boolean active;

@@ -313,14 +313,14 @@ public class OrderService
         }
     }
 
-    public void updateOrderStatus(String orderId, String status) {
-        Order order = orderRepository.findById(orderId).orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
-        order.setOrderStatus(status);
-        orderRepository.save(order);
-    }
-
     public Page<OrderResponse> filter(OrderFilter filter, Pageable pageable) {
         return orderRepository.findAll(new OrderSpecification(filter), pageable).map(baseMapper::toDTO);
+    }
+
+    public Page<OrderResponse> findAllByUsername(String username, Pageable pageable) {
+        User user =
+                userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        return orderRepository.findAllByCreatedBy(user.getUsername(), pageable).map(baseMapper::toDTO);
     }
 
     public List<RecentOrderResponse> getRecentOrders() {

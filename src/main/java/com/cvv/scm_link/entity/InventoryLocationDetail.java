@@ -23,7 +23,6 @@ public class InventoryLocationDetail extends BaseEntity {
     int quantityAvailable;
     String batchNumber;
 
-    @FutureOrPresent(message = "EXPIRY_DATE_MUST_BE_PRESENT_OR_FUTURE")
     LocalDate expiryDate;
 
     Long costPrice;

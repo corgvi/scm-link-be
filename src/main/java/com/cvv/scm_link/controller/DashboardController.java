@@ -1,5 +1,6 @@
 package com.cvv.scm_link.controller;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,6 +17,7 @@ import lombok.experimental.FieldDefaults;
 @RestController
 @RequestMapping("/dashboard")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@PreAuthorize("hasRole('ADMIN')")
 public class DashboardController {
     DashboardService dashboardService;
 
