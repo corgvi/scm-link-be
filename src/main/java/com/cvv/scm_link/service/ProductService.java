@@ -77,12 +77,12 @@ public class ProductService
         entity.setCategory(category);
         entity.setSupplier(supplier);
         entity.setActive(true);
-        entity.setSku(generateSku( category.getCode(), dto.getCode()));
+        entity.setSku(generateSku(category.getCode(), dto.getCode()));
         entity = productRepository.save(entity);
         return productMapper.toDTO(entity);
     }
 
-    private String generateSku( String categoryCode, String productCode) {
+    private String generateSku(String categoryCode, String productCode) {
         StringJoiner sku = new StringJoiner("-");
         int lastIndexSku = 1;
         Product product =
