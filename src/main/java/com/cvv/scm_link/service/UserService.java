@@ -119,6 +119,7 @@ public class UserService extends BaseServiceImpl<UserCreateRequest, UserUpdateRe
         return userRepository.findByRoleName(roleName, pageable).map(userMapper::toDTO);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public Page<UserResponse> filter(UserFilter filter, Pageable pageable) {
         UserSpecification spec = new UserSpecification(filter);
         return userRepository.findAll(spec, pageable).map(userMapper::toDTO);

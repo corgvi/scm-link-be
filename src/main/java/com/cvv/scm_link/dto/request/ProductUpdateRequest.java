@@ -15,10 +15,8 @@ public class ProductUpdateRequest {
     String description;
     String imageUrl;
     String weightG;
-    String lengthCm;
-    String widthCm;
-    String heightCm;
-    String branchName;
+    String origin;
+    String storageCondition;
     String size;
     String color;
     String categoryCode;

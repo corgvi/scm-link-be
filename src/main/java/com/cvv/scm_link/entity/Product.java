@@ -27,7 +27,6 @@ public class Product extends BaseEntity {
     String storageCondition;
     String origin;
     String color;
-    String size;
     boolean active;
 
     @Column(

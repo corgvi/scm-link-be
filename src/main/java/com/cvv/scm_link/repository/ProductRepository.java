@@ -14,9 +14,9 @@ import com.cvv.scm_link.entity.Product;
 public interface ProductRepository extends BaseRepository<Product, String> {
 
     @Query(
-            "Select p from Product p where p.code = :pCode and p.category.code = :cCode and p.size = :size order by p.sku desc limit 1")
+            "Select p from Product p where p.code = :pCode and p.category.code = :cCode order by p.sku desc limit 1")
     Optional<Product> findByLastSku(
-            @Param("pCode") String pCode, @Param("cCode") String cCode, @Param("size") String size);
+            @Param("pCode") String pCode, @Param("cCode") String cCode);
 
     boolean existsByCode(String code);
 
