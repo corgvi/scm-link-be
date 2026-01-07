@@ -9,7 +9,7 @@ import lombok.experimental.FieldDefaults;
 public class InventorySummaryDTO {
     String sku;
     String productName;
-    Long totalQuantity;
+    Integer totalQuantity;
     Long batchCount;
     Long totalValue;
     String warehouseId;
@@ -19,7 +19,7 @@ public class InventorySummaryDTO {
     public InventorySummaryDTO(
             String sku,
             String name,
-            Long quantityOnHand,
+            Integer quantityOnHand,
             Long batchCount,
             Long totalCost,
             String warehouseId,

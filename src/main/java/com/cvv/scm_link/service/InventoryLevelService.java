@@ -82,14 +82,4 @@ public class InventoryLevelService
 
         return inventoryLevelRepository.getInventorySummary(pageable);
     }
-
-    public InventoryLevel findByProductId(String id) {
-        return inventoryLevelRepository
-                .findByProduct_Id(id)
-                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
-    }
-
-    //    public Page<InventorySummaryDTO> filter(InventoryFilter filter, Pageable pageable) {
-    //        return inventoryLevelRepository.getInventorySummary()
-    //    }
 }
