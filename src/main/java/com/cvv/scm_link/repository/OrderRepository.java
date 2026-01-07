@@ -3,6 +3,7 @@ package com.cvv.scm_link.repository;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,6 +13,8 @@ import com.cvv.scm_link.entity.Order;
 
 @Repository
 public interface OrderRepository extends BaseRepository<Order, String> {
+    Page<Order> findAllByCreatedBy(String createdBy, Pageable pageable);
+
     @Query("SELECT COUNT(o) FROM Order o")
     long countAll();
 

@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.cvv.scm_link.dto.PageResponse;
@@ -23,6 +24,7 @@ import lombok.experimental.FieldDefaults;
 @RestController
 @RequestMapping("/inventoryTransactions")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@PreAuthorize("hasRole('ADMIN')")
 public class InventoryTransactionController
         extends BaseController<
                 InventoryTransactionRequest, InventoryTransactionRequest, InventoryTransactionResponse, String> {
@@ -37,6 +39,7 @@ public class InventoryTransactionController
         this.inventoryTransactionService = inventoryTransactionService;
     }
 
+    @PreAuthorize("hasRole('WAREHOUSE_STAFF') or hasRole('ADMIN')")
     @PostMapping("/adjustment")
     APIResponse<InventoryTransactionResponse> adjustment(
             @RequestBody @Valid InventoryTransactionAdjustmentRequest request) {

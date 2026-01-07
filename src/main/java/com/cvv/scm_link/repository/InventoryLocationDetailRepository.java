@@ -47,4 +47,27 @@ public interface InventoryLocationDetailRepository extends BaseRepository<Invent
 	WHERE ild.inventoryLevel.product.id = :productId
 """)
     List<BatchDetailDTO> getBatchDetails(@Param("productId") String productId);
+
+    @Query(
+            """
+	SELECT new com.cvv.scm_link.dto.response.BatchDetailDTO(
+		ild.batchNumber,
+		ild.createdAt,
+		ild.expiryDate,
+		ild.quantity,
+		ild.quantityAvailable,
+		ild.costPrice,
+		ild.sellPrice,
+		(ild.quantity * ild.costPrice),
+		wl.locationCode
+	)
+	FROM InventoryLocationDetail ild
+	JOIN WarehouseLocation wl
+	ON ild.warehouseLocation.id = wl.id
+	JOIN Warehouse  w
+	ON wl.warehouse.id = w.id
+	WHERE ild.inventoryLevel.product.id = :productId AND ild.inventoryLevel.warehouse.id = :warehouseId
+""")
+    List<BatchDetailDTO> getBatchDetails(
+            @Param("productId") String productId, @Param("warehouseId") String warehouseId);
 }

@@ -23,7 +23,7 @@ public interface InventoryLevelRepository extends BaseRepository<InventoryLevel,
 	SELECT new com.cvv.scm_link.dto.response.InventorySummaryDTO(
 		p.sku,
 		p.name,
-		SUM(il.quantityOnHand),
+		il.quantityOnHand,
 		COUNT(DISTINCT ild.batchNumber),
 		SUM(ild.quantity * ild.costPrice),
 		w.id,
@@ -34,7 +34,7 @@ public interface InventoryLevelRepository extends BaseRepository<InventoryLevel,
 	JOIN il.product p
 	JOIN il.warehouse w
 	LEFT JOIN il.inventoryLocationDetails ild
-	GROUP BY p.sku, p.name, w.id
+	GROUP BY p.sku, p.name,il.quantityOnHand, w.id,p.id
 """)
     Page<InventorySummaryDTO> getInventorySummary(Pageable pageable);
 }

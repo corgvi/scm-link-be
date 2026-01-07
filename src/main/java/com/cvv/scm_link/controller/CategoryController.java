@@ -3,6 +3,7 @@ package com.cvv.scm_link.controller;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -24,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/categories")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@PreAuthorize("hasRole('ADMIN')")
 public class CategoryController extends BaseController<CategoryRequest, CategoryRequest, CategoryResponse, String> {
 
     CategoryService categoryService;
@@ -35,6 +37,32 @@ public class CategoryController extends BaseController<CategoryRequest, Category
         this.categoryService = categoryService;
     }
 
+    @Override
+    public APIResponse<PageResponse<CategoryResponse>> findAll(int page, int size, String sort) {
+        return super.findAll(page, size, sort);
+    }
+
+    @Override
+    public APIResponse<CategoryResponse> findById(String id) {
+        return super.findById(id);
+    }
+
+    @Override
+    public APIResponse<CategoryResponse> save(CategoryRequest dto) {
+        return super.save(dto);
+    }
+
+    @Override
+    public APIResponse<CategoryResponse> update(CategoryRequest dto, String id) {
+        return super.update(dto, id);
+    }
+
+    @Override
+    public APIResponse<Void> delete(String id) {
+        return super.delete(id);
+    }
+
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/filter")
     public APIResponse<PageResponse<CategoryResponse>> filter(
             CategoryFilter filter,

@@ -24,12 +24,10 @@ public class ProductCreateRequest {
     @NotBlank(message = "CODE_INVALID")
     String code;
 
-    String lengthCm;
-    String widthCm;
-    String heightCm;
+    @NotBlank(message = "ORIGIN_INVALID")
+    String origin;
 
-    @NotBlank(message = "BRANCH_NAME_INVALID")
-    String branchName;
+    String storageCondition;
 
     @Size(min = 1, max = 3, message = "SIZE_INVALID")
     String size;

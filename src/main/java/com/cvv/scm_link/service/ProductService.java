@@ -1,7 +1,6 @@
 package com.cvv.scm_link.service;
 
-import java.util.Objects;
-import java.util.StringJoiner;
+import java.util.*;
 
 import jakarta.persistence.LockModeType;
 
@@ -14,7 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cvv.scm_link.dto.filter.ProductFilter;
 import com.cvv.scm_link.dto.request.ProductCreateRequest;
 import com.cvv.scm_link.dto.request.ProductUpdateRequest;
+import com.cvv.scm_link.dto.response.InventoryBatchDTO;
+import com.cvv.scm_link.dto.response.ProductBatchFlatDTO;
 import com.cvv.scm_link.dto.response.ProductDetailsResponse;
+import com.cvv.scm_link.dto.response.ProductUserResponse;
 import com.cvv.scm_link.entity.Category;
 import com.cvv.scm_link.entity.Product;
 import com.cvv.scm_link.entity.Supplier;
@@ -75,24 +77,24 @@ public class ProductService
         entity.setCategory(category);
         entity.setSupplier(supplier);
         entity.setActive(true);
-        entity.setSku(generateSku(dto.getSize(), category.getCode(), dto.getCode()));
+        entity.setSku(generateSku(category.getCode(), dto.getCode()));
         entity = productRepository.save(entity);
         return productMapper.toDTO(entity);
     }
 
-    private String generateSku(String size, String categoryCode, String productCode) {
+    private String generateSku(String categoryCode, String productCode) {
         StringJoiner sku = new StringJoiner("-");
         int lastIndexSku = 1;
         Product product =
-                productRepository.findByLastSku(productCode, categoryCode, size).orElse(null);
+                productRepository.findByLastSku(productCode, categoryCode).orElse(null);
         if (Objects.isNull(product)) {
-            sku.add(productCode).add(categoryCode).add(size).add(String.format("%03d", lastIndexSku));
+            sku.add(productCode).add(categoryCode).add(String.format("%03d", lastIndexSku));
         } else {
             String[] parts = product.getSku().split("-");
             if (parts.length == 5) {
                 lastIndexSku = Integer.parseInt(parts[4]) + 1;
             }
-            sku.add(productCode).add(categoryCode).add(size).add(String.format("%03d", lastIndexSku));
+            sku.add(productCode).add(categoryCode).add(String.format("%03d", lastIndexSku));
         }
 
         return sku.toString();
@@ -137,5 +139,34 @@ public class ProductService
         return productRepository
                 .findAll(new ProductSpecification(filter), pageable)
                 .map(productMapper::toDTO);
+    }
+
+    public List<ProductUserResponse> getProductsWithStockAndPrice() {
+        List<ProductBatchFlatDTO> productBatchFlatDTOs = productRepository.getProductStockAndPrice();
+        Map<String, ProductUserResponse> result = new LinkedHashMap<>();
+        for (ProductBatchFlatDTO dto : productBatchFlatDTOs) {
+            ProductUserResponse productUserResponse =
+                    result.computeIfAbsent(dto.getId(), id -> ProductUserResponse.builder()
+                            .id(dto.getId())
+                            .name(dto.getName())
+                            .code(dto.getCode())
+                            .imageUrl(dto.getImageUrl())
+                            .origin(dto.getOrigin())
+                            .sku(dto.getSku())
+                            .batches(new ArrayList<>())
+                            .weight(dto.getWeight())
+                            .description(dto.getDescription())
+                            .build());
+
+            if (dto.getSellPrice() > 0 && dto.getTotalAvailable() > 0) {
+                productUserResponse
+                        .getBatches()
+                        .add(InventoryBatchDTO.builder()
+                                .totalAvailable(dto.getTotalAvailable())
+                                .sellPrice(dto.getSellPrice())
+                                .build());
+            }
+        }
+        return new ArrayList<>(result.values());
     }
 }

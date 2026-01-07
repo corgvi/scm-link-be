@@ -21,13 +21,9 @@ public class ProductDetailsResponse extends BaseDTO {
     Boolean active;
     String imageUrl;
     String weightG;
-    String lengthCm;
-    String widthCm;
-    String heightCm;
-    String branchName;
-    String color;
+    String origin;
+    String storageCondition;
     String code;
-    String size;
     CategoryResponse category;
     SupplierResponse supplier;
 }

@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,6 +24,7 @@ import lombok.experimental.FieldDefaults;
 @RestController
 @RequestMapping("/inventoryLevels")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@PreAuthorize("hasRole('ADMIN')")
 public class InventoryLevelController
         extends BaseController<InventoryLevelRequest, InventoryLevelRequest, InventoryLevelResponse, String> {
 
@@ -35,6 +37,7 @@ public class InventoryLevelController
         this.inventoryLevelService = inventoryLevelService;
     }
 
+    @PreAuthorize("hasRole('WAREHOUSE_STAFF') or hasRole('ADMIN')")
     @GetMapping("/summary")
     public APIResponse<PageResponse<InventorySummaryDTO>> getInventoryLevels(
             @RequestParam(defaultValue = "1") int page,

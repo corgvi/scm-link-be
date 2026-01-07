@@ -1,8 +1,11 @@
 package com.cvv.scm_link.controller;
 
+import java.util.List;
+
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -14,6 +17,7 @@ import com.cvv.scm_link.dto.request.ProductCreateRequest;
 import com.cvv.scm_link.dto.request.ProductUpdateRequest;
 import com.cvv.scm_link.dto.response.APIResponse;
 import com.cvv.scm_link.dto.response.ProductDetailsResponse;
+import com.cvv.scm_link.dto.response.ProductUserResponse;
 import com.cvv.scm_link.service.BaseService;
 import com.cvv.scm_link.service.ProductService;
 
@@ -25,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/products")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@PreAuthorize("hasRole('ADMIN') or hasRole('WAREHOUSE_STAFF')")
 public class ProductController
         extends BaseController<ProductCreateRequest, ProductUpdateRequest, ProductDetailsResponse, String> {
 
@@ -37,6 +42,7 @@ public class ProductController
         this.productService = productService;
     }
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/filter")
     APIResponse<PageResponse<ProductDetailsResponse>> filter(
             ProductFilter filter,
@@ -52,6 +58,14 @@ public class ProductController
         Pageable pageable = PageRequest.of(pageIndex, size, Sort.by(direction, sortParams[0]));
         return APIResponse.<PageResponse<ProductDetailsResponse>>builder()
                 .result(PageResponse.of(productService.filter(filter, pageable)))
+                .build();
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/all")
+    public APIResponse<List<ProductUserResponse>> getAllProductsWithPrice() {
+        return APIResponse.<List<ProductUserResponse>>builder()
+                .result(productService.getProductsWithStockAndPrice())
                 .build();
     }
 }

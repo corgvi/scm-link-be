@@ -1,5 +1,6 @@
 package com.cvv.scm_link.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -72,6 +73,8 @@ public class InventoryLocationDetailService
     public InventoryLocationDetailResponse create(
             InventoryLocationDetailRequest dto, String warehouseId, String productId) {
         InventoryLocationDetail inventoryLocationDetail = inventoryLocationDetailMapper.toEntity(dto);
+        if (dto.getExpiryDate().isBefore(LocalDate.now()))
+            throw new AppException(ErrorCode.EXPIRY_DATE_MUST_BE_PRESENT_OR_FUTURE);
         WarehouseLocation location = warehouseLocationRepository
                 .findByIdAndWarehouse_Id(dto.getWarehouseLocationId(), warehouseId)
                 .orElseThrow(() -> new AppException(ErrorCode.WAREHOUSE_LOCATION_NOT_IN_WAREHOUSE));
@@ -112,5 +115,10 @@ public class InventoryLocationDetailService
     public List<BatchDetailDTO> getBatchDetails(String productId) {
         productRepository.findById(productId).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
         return inventoryLocationDetailRepository.getBatchDetails(productId);
+    }
+
+    public List<BatchDetailDTO> getBatchDetails(String productId, String warehouseId) {
+        productRepository.findById(productId).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+        return inventoryLocationDetailRepository.getBatchDetails(productId, warehouseId);
     }
 }

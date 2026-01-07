@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.cvv.scm_link.dto.PageResponse;
@@ -22,6 +23,7 @@ import lombok.experimental.FieldDefaults;
 @RestController
 @RequestMapping("/inventoryLocationDetails")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@PreAuthorize("hasRole('WAREHOUSE_STAFF') or hasRole('ADMIN')")
 public class InventoryLocationDetailController
         extends BaseController<
                 InventoryLocationDetailRequest,
@@ -42,6 +44,7 @@ public class InventoryLocationDetailController
         this.inventoryLocationDetailService = inventoryLocationDetailService;
     }
 
+    @PreAuthorize("isAuthenticated()")
     @Override
     public APIResponse<PageResponse<InventoryLocationDetailResponse>> findAll(
             @RequestParam(defaultValue = "1") int page,
@@ -64,6 +67,14 @@ public class InventoryLocationDetailController
     public APIResponse<List<BatchDetailDTO>> getBatchDetailsByProductId(@PathVariable("productId") String productId) {
         return APIResponse.<List<BatchDetailDTO>>builder()
                 .result(inventoryLocationDetailService.getBatchDetails(productId))
+                .build();
+    }
+
+    @GetMapping("/batchDetails/{productId}/{warehouseId}")
+    public APIResponse<List<BatchDetailDTO>> getBatchDetailsByProductAndWarehouse(
+            @PathVariable("productId") String productId, @PathVariable("warehouseId") String warehouseId) {
+        return APIResponse.<List<BatchDetailDTO>>builder()
+                .result(inventoryLocationDetailService.getBatchDetails(productId, warehouseId))
                 .build();
     }
 }

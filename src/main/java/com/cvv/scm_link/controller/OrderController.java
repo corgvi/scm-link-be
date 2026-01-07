@@ -66,4 +66,22 @@ public class OrderController extends BaseController<OrderCreateRequest, OrderUpd
                 .result(orderService.getRecentOrders())
                 .build();
     }
+
+    @GetMapping("/user/{username}")
+    public APIResponse<PageResponse<OrderResponse>> getOrdersByUsername(
+            @PathVariable String username,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt,desc") String sort) {
+        int pageIndex = Math.max(page - 1, 0);
+
+        String[] sortParams = sort.split(",");
+        Sort.Direction direction =
+                sortParams.length > 1 ? Sort.Direction.fromString(sortParams[1]) : Sort.Direction.ASC;
+
+        Pageable pageable = PageRequest.of(pageIndex, size, Sort.by(direction, sortParams[0]));
+        return APIResponse.<PageResponse<OrderResponse>>builder()
+                .result(PageResponse.of(orderService.findAllByUsername(username, pageable)))
+                .build();
+    }
 }
